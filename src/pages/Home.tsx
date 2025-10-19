@@ -1,95 +1,67 @@
 import { Hero } from "@/components/Hero";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Heart, Bell, CheckCircle2, TrendingUp, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
-const HowItWorks = () => {
-  const steps = [
-    {
-      icon: Search,
-      title: "Tell us about your business",
-      description: "Quick onboarding to understand your needs and match you with the best programs.",
-    },
-    {
-      icon: Heart,
-      title: "Find grants and loans",
-      description: "Browse curated funding opportunities specific to Arizona businesses.",
-    },
-    {
-      icon: Bell,
-      title: "Track deadlines",
-      description: "Never miss an opportunity with automated reminders and deadline tracking.",
-    },
-  ];
-
+const ValueRow = () => {
   return (
-    <section className="py-20 bg-secondary/30">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get started in minutes and discover funding opportunities tailored to your business
+        <div className="max-w-3xl mx-auto text-center space-y-4">
+          <h2 className="text-3xl md:text-4xl font-bold">
+            Find grants, match to loans, and track deadlines in one place
+          </h2>
+          <p className="text-xl text-muted-foreground">
+            Everything Arizona small businesses need to secure funding and grow
           </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <Card key={index} className="text-center" style={{ boxShadow: "var(--shadow-card)" }}>
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <step.icon className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-xl">{step.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base">{step.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Button asChild size="lg">
-            <Link to="/onboarding">Get Started</Link>
-          </Button>
         </div>
       </div>
     </section>
   );
 };
 
-const Features = () => {
-  const features = [
-    {
-      icon: CheckCircle2,
-      title: "Curated Programs",
-      description: "Hand-picked grants and loans specifically for Arizona small businesses.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Smart Matching",
-      description: "AI-powered recommendations based on your business profile.",
-    },
-    {
-      icon: Shield,
-      title: "Always Up-to-Date",
-      description: "Real-time updates on program availability and deadline changes.",
-    },
-  ];
-
+const StatsRow = () => {
   return (
-    <section className="py-20">
+    <section className="py-16 bg-secondary/30">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div key={index} className="space-y-3">
-              <feature.icon className="h-10 w-10 text-primary" />
-              <h3 className="text-xl font-bold">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </div>
-          ))}
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="text-center">
+            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">50+</div>
+            <div className="text-muted-foreground">Programs</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">$10M+</div>
+            <div className="text-muted-foreground">Available Funding</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">100%</div>
+            <div className="text-muted-foreground">Arizona Focused</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const CTASection = () => {
+  return (
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button asChild size="lg" className="text-lg h-14 px-8 shadow-lg hover:shadow-xl transition-all">
+            <Link to="/grants" className="flex items-center gap-2">
+              Browse Grants
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="text-lg h-14 px-8 border-2 hover:bg-primary/5">
+            <Link to="/loans" className="flex items-center gap-2">
+              Browse Loans
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
@@ -140,12 +112,42 @@ const Footer = () => {
 };
 
 export default function Home() {
+  const [showHeader, setShowHeader] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > window.innerHeight * 0.5;
+      setShowHeader(scrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen">
-      <Navbar />
+      {/* Header that appears on scroll */}
+      <div 
+        className={`fixed top-0 w-full z-50 transition-transform duration-300 ${
+          showHeader ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        <Navbar />
+      </div>
+
+      {/* Full-screen hero */}
       <Hero />
-      <HowItWorks />
-      <Features />
+
+      {/* CTAs appear after scroll */}
+      <CTASection />
+      
+      {/* Value proposition */}
+      <ValueRow />
+      
+      {/* Stats */}
+      <StatsRow />
+      
+      {/* Footer */}
       <Footer />
     </div>
   );
