@@ -1,19 +1,50 @@
-import { Navbar } from "@/components/Navbar";
-import { ProgramCard } from "@/components/ProgramCard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Heart, FileText } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, DollarSign, CheckCircle2, TrendingUp, Lightbulb, ArrowRight, Layers } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import blueprintBg from "@/assets/blueprint-bg.jpg";
 
 export default function Dashboard() {
-  const [favorites, setFavorites] = useState<any[]>([]);
-  const [reminders, setReminders] = useState<any[]>([]);
-  const [applications, setApplications] = useState<any[]>([]);
+  const [recentGrants, setRecentGrants] = useState<any[]>([]);
+  const [recentLoans, setRecentLoans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const stats = [
+    { 
+      title: "ACTIVE GRANTS", 
+      value: "6", 
+      subtitle: "Available now",
+      icon: Award,
+      color: "text-primary"
+    },
+    { 
+      title: "LOAN PROGRAMS", 
+      value: "6", 
+      subtitle: "Ready to apply",
+      icon: DollarSign,
+      color: "text-primary"
+    },
+    { 
+      title: "SAVED ITEMS", 
+      value: "0", 
+      subtitle: "Tracking",
+      icon: CheckCircle2,
+      color: "text-primary"
+    },
+    { 
+      title: "NEW THIS WEEK", 
+      value: "0", 
+      subtitle: "Fresh opportunities",
+      icon: TrendingUp,
+      color: "text-primary"
+    },
+  ];
 
   useEffect(() => {
     checkAuth();
@@ -32,31 +63,24 @@ export default function Dashboard() {
   const fetchDashboardData = async (userId: string) => {
     setLoading(true);
     try {
-      // Fetch favorites with program details
-      const { data: favData } = await supabase
-        .from("favorites")
-        .select("*, programs(*)")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+      // Fetch recent grants
+      const { data: grantsData } = await supabase
+        .from("programs")
+        .select("*")
+        .eq("type", "GRANT")
+        .order("created_at", { ascending: false })
+        .limit(2);
 
-      // Fetch reminders with program details
-      const { data: remData } = await supabase
-        .from("reminders")
-        .select("*, programs(*)")
-        .eq("user_id", userId)
-        .gte("remind_at", new Date().toISOString())
-        .order("remind_at", { ascending: true });
+      // Fetch recent loans
+      const { data: loansData } = await supabase
+        .from("programs")
+        .select("*")
+        .eq("type", "LOAN")
+        .order("created_at", { ascending: false })
+        .limit(2);
 
-      // Fetch applications with program details
-      const { data: appData } = await supabase
-        .from("applications")
-        .select("*, programs(*)")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      setFavorites(favData || []);
-      setReminders(remData || []);
-      setApplications(appData || []);
+      setRecentGrants(grantsData || []);
+      setRecentLoans(loansData || []);
     } catch (error) {
       toast.error("Failed to load dashboard data");
     } finally {
@@ -64,173 +88,182 @@ export default function Dashboard() {
     }
   };
 
-  const favoriteIds = new Set(favorites.map(f => f.program_id));
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <p className="text-center text-muted-foreground">Loading dashboard...</p>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <main className="flex-1 bg-background">
+            <div className="p-8">
+              <p className="text-center text-muted-foreground">Loading dashboard...</p>
+            </div>
+          </main>
         </div>
-      </div>
+      </SidebarProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-          <p className="text-xl text-muted-foreground">
-            Track your saved programs and upcoming deadlines
-          </p>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Saved Programs</CardTitle>
-              <Heart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{favorites.length}</div>
-              <p className="text-xs text-muted-foreground">Programs you're tracking</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Upcoming Deadlines</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{reminders.length}</div>
-              <p className="text-xs text-muted-foreground">Reminders set</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Applications</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{applications.length}</div>
-              <p className="text-xs text-muted-foreground">In progress</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="saved" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="saved">Saved Programs</TabsTrigger>
-            <TabsTrigger value="deadlines">Upcoming Deadlines</TabsTrigger>
-            <TabsTrigger value="applications">Applications</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="saved" className="space-y-4">
-            {favorites.length === 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No saved programs yet</CardTitle>
-                  <CardDescription>
-                    Start browsing grants and loans to save programs you're interested in
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-6">
-                {favorites.map((fav) => (
-                  <ProgramCard
-                    key={fav.id}
-                    program={fav.programs}
-                    isFavorite={true}
-                    onFavoriteToggle={() => {
-                      const session = supabase.auth.getSession();
-                      session.then(({ data }) => {
-                        if (data.session) fetchDashboardData(data.session.user.id);
-                      });
-                    }}
-                  />
-                ))}
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        
+        <main className="flex-1 relative">
+          {/* Blueprint Background */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: `url(${blueprintBg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+          
+          <div className="relative z-10">
+            {/* Header with Trigger */}
+            <header className="border-b border-border bg-background/80 backdrop-blur-sm">
+              <div className="flex items-center h-14 px-6">
+                <SidebarTrigger />
               </div>
-            )}
-          </TabsContent>
+            </header>
 
-          <TabsContent value="deadlines" className="space-y-4">
-            {reminders.length === 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No upcoming deadlines</CardTitle>
-                  <CardDescription>
-                    Set reminders for programs to track their application deadlines
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {reminders.map((reminder) => (
-                  <Card key={reminder.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <CardTitle className="text-lg">{reminder.programs.name}</CardTitle>
-                          <CardDescription>{reminder.programs.sponsor}</CardDescription>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-primary">
-                            {new Date(reminder.remind_at).toLocaleDateString()}
-                          </div>
-                          <div className="text-xs text-muted-foreground">Reminder</div>
-                        </div>
+            <div className="p-8 space-y-8">
+              {/* Hero Section */}
+              <div className="max-w-4xl">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 mb-6">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-medium text-primary uppercase tracking-wide">
+                    Arizona Business Platform
+                  </span>
+                </div>
+                
+                <h1 className="text-5xl font-bold mb-4">
+                  Your Blueprint for Success
+                </h1>
+                
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
+                  Discover grants, secure loans, and navigate Arizona's business landscape with precision.
+                </p>
+                
+                <div className="flex flex-wrap gap-4">
+                  <Button size="lg" asChild>
+                    <Link to="/grants">
+                      Explore Grants
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link to="/idea-lab">
+                      <Lightbulb className="mr-2 w-4 h-4" />
+                      Generate Ideas
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {stats.map((stat) => (
+                  <Card key={stat.title} className="bg-card/60 backdrop-blur-sm border-border/50">
+                    <CardHeader className="space-y-4">
+                      <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center">
+                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          {stat.title}
+                        </p>
+                        <p className="text-4xl font-bold">{stat.value}</p>
+                        <p className="text-sm text-muted-foreground">{stat.subtitle}</p>
                       </div>
                     </CardHeader>
                   </Card>
                 ))}
               </div>
-            )}
-          </TabsContent>
 
-          <TabsContent value="applications" className="space-y-4">
-            {applications.length === 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No applications tracked</CardTitle>
-                  <CardDescription>
-                    Track your grant and loan applications here
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {applications.map((app) => (
-                  <Card key={app.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <CardTitle className="text-lg">{app.programs.name}</CardTitle>
-                          <CardDescription>{app.programs.sponsor}</CardDescription>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium capitalize">{app.status}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {app.submitted_at ? `Submitted ${new Date(app.submitted_at).toLocaleDateString()}` : "Draft"}
-                          </div>
-                        </div>
+              {/* Recent Sections */}
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Recent Grants */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center">
+                        <Award className="w-5 h-5 text-primary" />
                       </div>
-                    </CardHeader>
-                  </Card>
-                ))}
+                      <h2 className="text-2xl font-bold">RECENT GRANTS</h2>
+                    </div>
+                    <Link to="/grants" className="text-primary hover:underline text-sm font-medium">
+                      View All
+                    </Link>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {recentGrants.length === 0 ? (
+                      <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+                        <CardHeader>
+                          <p className="text-muted-foreground">No grants available</p>
+                        </CardHeader>
+                      </Card>
+                    ) : (
+                      recentGrants.map((grant) => (
+                        <Card 
+                          key={grant.id} 
+                          className="bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => navigate(`/program/${grant.id}`)}
+                        >
+                          <CardHeader>
+                            <CardTitle className="text-lg">{grant.name}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{grant.sponsor}</p>
+                          </CardHeader>
+                        </Card>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Recent Loans */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                      </div>
+                      <h2 className="text-2xl font-bold">RECENT LOANS</h2>
+                    </div>
+                    <Link to="/loans" className="text-primary hover:underline text-sm font-medium">
+                      View All
+                    </Link>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {recentLoans.length === 0 ? (
+                      <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+                        <CardHeader>
+                          <p className="text-muted-foreground">No loans available</p>
+                        </CardHeader>
+                      </Card>
+                    ) : (
+                      recentLoans.map((loan) => (
+                        <Card 
+                          key={loan.id}
+                          className="bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => navigate(`/program/${loan.id}`)}
+                        >
+                          <CardHeader>
+                            <CardTitle className="text-lg">{loan.name}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{loan.sponsor}</p>
+                          </CardHeader>
+                        </Card>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
