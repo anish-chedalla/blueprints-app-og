@@ -233,6 +233,36 @@ export type Database = {
           },
         ]
       }
+      sync_metadata: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          last_synced: string
+          records_synced: number | null
+          status: string | null
+          sync_type: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_synced?: string
+          records_synced?: number | null
+          status?: string | null
+          sync_type: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_synced?: string
+          records_synced?: number | null
+          status?: string | null
+          sync_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

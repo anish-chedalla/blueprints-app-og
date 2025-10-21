@@ -2,7 +2,8 @@ import { Navbar } from "@/components/Navbar";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ProgramCard } from "@/components/ProgramCard";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -11,6 +12,8 @@ export default function Grants() {
   const [programs, setPrograms] = useState<any[]>([]);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     level: [] as string[],
@@ -26,7 +29,46 @@ export default function Grants() {
   useEffect(() => {
     fetchPrograms();
     fetchFavorites();
+    fetchLastSyncTime();
   }, [filters, searchQuery]);
+
+  const fetchLastSyncTime = async () => {
+    const { data } = await supabase
+      .from('sync_metadata')
+      .select('last_synced')
+      .eq('sync_type', 'grants')
+      .order('last_synced', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (data) {
+      setLastSynced(data.last_synced);
+    }
+  };
+
+  const handleSyncGrants = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('sync-grants', {
+        method: 'POST',
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success('Grant data updated successfully');
+        setLastSynced(data.lastSynced);
+        await fetchPrograms();
+      } else {
+        throw new Error(data.error || 'Sync failed');
+      }
+    } catch (error) {
+      console.error('Error syncing grants:', error);
+      toast.error('Failed to sync grant data');
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const fetchPrograms = async () => {
     setLoading(true);
@@ -110,10 +152,27 @@ export default function Grants() {
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">Grant Finder</h1>
-          <p className="text-xl text-muted-foreground mb-6">
-            Discover grant opportunities for your Arizona business
-          </p>
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Grant Finder</h1>
+              <p className="text-xl text-muted-foreground">
+                Discover grant opportunities for your Arizona business
+              </p>
+              {lastSynced && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Last synced: {new Date(lastSynced).toLocaleString()}
+                </p>
+              )}
+            </div>
+            <Button 
+              onClick={handleSyncGrants} 
+              disabled={syncing}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Syncing...' : 'Sync Grants'}
+            </Button>
+          </div>
           
           <div className="relative max-w-xl">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
