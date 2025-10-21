@@ -105,24 +105,24 @@ export const FilterPanel = ({ filters, onFilterChange, type }: FilterPanelProps)
             <div className="space-y-3">
               <Label className="font-semibold">Location</Label>
               <div className="space-y-2">
-                <Select value={filters.county} onValueChange={(value) => onFilterChange({ ...filters, county: value })}>
+                <Select value={filters.county || "all"} onValueChange={(value) => onFilterChange({ ...filters, county: value === "all" ? "" : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select county" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Counties</SelectItem>
+                    <SelectItem value="all">All Counties</SelectItem>
                     {COUNTIES.map(county => (
                       <SelectItem key={county} value={county}>{county}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={filters.city} onValueChange={(value) => onFilterChange({ ...filters, city: value })}>
+                <Select value={filters.city || "all"} onValueChange={(value) => onFilterChange({ ...filters, city: value === "all" ? "" : value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select city" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Cities</SelectItem>
+                    <SelectItem value="all">All Cities</SelectItem>
                     {CITIES.map(city => (
                       <SelectItem key={city} value={city}>{city}</SelectItem>
                     ))}
