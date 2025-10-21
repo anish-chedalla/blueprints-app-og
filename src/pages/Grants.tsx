@@ -56,7 +56,7 @@ export default function Grants() {
       if (error) throw error;
 
       if (data.success) {
-        toast.success('Grant data updated successfully');
+        toast.success('Federal grant data updated successfully');
         setLastSynced(data.lastSynced);
         await fetchPrograms();
       } else {
@@ -185,8 +185,11 @@ export default function Grants() {
         </div>
 
         <div className="grid lg:grid-cols-[300px_1fr] gap-8">
-          <aside className="lg:sticky lg:top-20 h-fit">
+          <aside className="lg:sticky lg:top-20 h-fit space-y-4">
             <FilterPanel filters={filters} onFilterChange={setFilters} type="GRANT" />
+            <div className="text-xs text-muted-foreground p-4 border rounded-lg bg-muted/50">
+              This product uses the Grants.gov API but is not endorsed or certified by the U.S. Department of Health and Human Services.
+            </div>
           </aside>
 
           <main>

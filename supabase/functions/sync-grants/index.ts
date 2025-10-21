@@ -16,76 +16,93 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log('Starting grant sync...');
+    console.log('Starting federal grant sync from Grants.gov API...');
 
-    // Fetch the grant portal page
-    const grantUrl = 'https://www.thegrantportal.com/grant-details/75513/grants-to-grow-local-culture-and-learning';
-    const response = await fetch(grantUrl);
-    const html = await response.text();
-
-    console.log('Fetched grant page, parsing data...');
-
-    // Parse HTML to extract grant information
-    // This is a simple parser - in production you might use a proper HTML parser
-    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-    const title = titleMatch ? titleMatch[1].split(' - ')[0].trim() : 'Grants to Grow Local Culture and Learning';
-
-    // Extract description from meta tags or content
-    const descMatch = html.match(/<meta name="description" content="(.*?)"/i);
-    const description = descMatch 
-      ? descMatch[1] 
-      : 'Funding program supporting community cultural and learning initiatives across Arizona.';
-
-    // For now, we'll use the example data structure since scraping dynamic content
-    // requires more sophisticated tools. This can be replaced with actual scraping logic.
-    const grantData = {
-      type: 'GRANT' as const,
-      level: 'STATE' as const,
-      name: title.length > 10 ? title : 'Grants to Grow Local Culture and Learning',
-      sponsor: 'The Grant Portal',
-      state: 'AZ',
-      url: grantUrl,
-      description: description.length > 20 ? description : 'Funding program supporting community cultural and learning initiatives across Arizona.',
-      industry_tags: ['arts', 'education'],
-      demographics: [],
-      min_amount: 1000,
-      max_amount: 5000,
-      deadline: '2025-11-01T00:00:00.000Z',
-      rolling: false,
-      status: 'OPEN' as const,
+    // Call Grants.gov Search2 API
+    const apiUrl = 'https://api.grants.gov/v1/api/search2';
+    const requestBody = {
+      rows: 100,
+      keyword: 'Arizona',
+      oppStatuses: 'posted',
+      fundingCategories: '',
+      agencies: ''
     };
 
-    console.log('Parsed grant data:', grantData);
+    console.log('Calling Grants.gov API with body:', requestBody);
 
-    // Check if program already exists
-    const { data: existingProgram } = await supabase
-      .from('programs')
-      .select('id')
-      .eq('url', grantData.url)
-      .single();
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Grants.gov API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log(`Received ${data.oppHits?.length || 0} grants from API`);
 
     let recordsAffected = 0;
 
-    if (existingProgram) {
-      // Update existing program
-      const { error: updateError } = await supabase
-        .from('programs')
-        .update(grantData)
-        .eq('id', existingProgram.id);
+    // Process each grant opportunity
+    if (data.oppHits && Array.isArray(data.oppHits)) {
+      for (const oppHit of data.oppHits) {
+        const oppStatus = oppHit.oppStatus === 'posted' ? 'OPEN' : 'CLOSED';
+        const grantData = {
+          type: 'GRANT' as const,
+          level: 'FEDERAL' as const,
+          name: oppHit.title || 'Untitled Grant',
+          sponsor: oppHit.agencyName || 'Unknown Agency',
+          state: 'AZ',
+          url: `https://www.grants.gov/web/grants/view-opportunity.html?oppId=${oppHit.id}`,
+          description: oppHit.description || null,
+          industry_tags: oppHit.fundingCategories ? [oppHit.fundingCategories] : [],
+          demographics: [],
+          min_amount: null,
+          max_amount: null,
+          deadline: oppHit.closeDate ? new Date(oppHit.closeDate).toISOString() : null,
+          rolling: false,
+          status: oppStatus as 'OPEN' | 'CLOSED',
+        };
 
-      if (updateError) throw updateError;
-      recordsAffected = 1;
-      console.log('Updated existing grant');
-    } else {
-      // Insert new program
-      const { error: insertError } = await supabase
-        .from('programs')
-        .insert([grantData]);
+        // Check if program already exists by URL
+        const { data: existingProgram } = await supabase
+          .from('programs')
+          .select('id')
+          .eq('url', grantData.url)
+          .maybeSingle();
 
-      if (insertError) throw insertError;
-      recordsAffected = 1;
-      console.log('Inserted new grant');
+        if (existingProgram) {
+          // Update existing program
+          const { error: updateError } = await supabase
+            .from('programs')
+            .update(grantData)
+            .eq('id', existingProgram.id);
+
+          if (updateError) {
+            console.error('Error updating grant:', updateError);
+          } else {
+            recordsAffected++;
+          }
+        } else {
+          // Insert new program
+          const { error: insertError } = await supabase
+            .from('programs')
+            .insert([grantData]);
+
+          if (insertError) {
+            console.error('Error inserting grant:', insertError);
+          } else {
+            recordsAffected++;
+          }
+        }
+      }
     }
+
+    console.log(`Successfully processed ${recordsAffected} grants`);
 
     // Log sync metadata
     const { error: metadataError } = await supabase
@@ -114,7 +131,7 @@ serve(async (req) => {
         success: true,
         recordsSynced: recordsAffected,
         lastSynced: syncData?.last_synced,
-        message: 'Grant data synced successfully',
+        message: 'Federal grant data updated successfully',
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
