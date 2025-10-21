@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProgramCard } from "@/components/ProgramCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -81,14 +81,13 @@ export default function Saved() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <DashboardLayout>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Loading saved items...</p>
           </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
@@ -108,9 +107,7 @@ export default function Saved() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
@@ -167,6 +164,6 @@ export default function Saved() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

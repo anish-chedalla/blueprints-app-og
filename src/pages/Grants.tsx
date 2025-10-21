@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ProgramCard } from "@/components/ProgramCard";
 import { Input } from "@/components/ui/input";
@@ -147,8 +147,7 @@ export default function Grants() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <DashboardLayout>
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -220,6 +219,6 @@ export default function Grants() {
           </main>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

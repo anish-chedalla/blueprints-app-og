@@ -5,8 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import blueprintBg from "@/assets/blueprint-bg.jpg";
 
 export default function Dashboard() {
@@ -90,45 +89,30 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1 bg-background">
-            <div className="p-8">
-              <p className="text-center text-muted-foreground">Loading dashboard...</p>
-            </div>
-          </main>
+      <DashboardLayout>
+        <div className="p-8">
+          <p className="text-center text-muted-foreground">Loading dashboard...</p>
         </div>
-      </SidebarProvider>
+      </DashboardLayout>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
+    <DashboardLayout>
+      <div className="relative min-h-full">
+        {/* Blueprint Background */}
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `url(${blueprintBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
         
-        <main className="flex-1 relative">
-          {/* Blueprint Background */}
-          <div 
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `url(${blueprintBg})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          />
-          
-          <div className="relative z-10">
-            {/* Header with Trigger */}
-            <header className="border-b border-border bg-background/80 backdrop-blur-sm">
-              <div className="flex items-center h-14 px-6">
-                <SidebarTrigger />
-              </div>
-            </header>
-
-            <div className="p-8 space-y-8">
+        <div className="relative z-10">
+          <div className="p-8 space-y-8">
               {/* Hero Section */}
               <div className="max-w-4xl">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 mb-6">
@@ -260,10 +244,9 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
-        </main>
+        </div>
       </div>
-    </SidebarProvider>
+    </DashboardLayout>
   );
 }
