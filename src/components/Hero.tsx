@@ -2,44 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import blueprintsIcon from "@/assets/blueprints-icon.png";
+import abstractBg from "@/assets/abstract-blue-bg.png";
 
 export const Hero = () => {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 48%) 0%, hsl(210, 75%, 52%) 50%, hsl(210, 68%, 50%) 100%)' }}>
-      
-      {/* Abstract geometric shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Large circles */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 border-4 border-white/10 rounded-full" />
-        <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] border-4 border-white/5 rounded-full" />
-        <div className="absolute -bottom-40 left-1/4 w-80 h-80 border-4 border-white/8 rounded-full" />
-        
-        {/* Floating squares and rectangles */}
-        <div className="absolute top-20 left-1/4 w-32 h-32 border-2 border-white/10 rotate-45 rounded-lg" />
-        <div className="absolute bottom-40 right-1/4 w-48 h-24 border-2 border-white/8 -rotate-12 rounded-lg" />
-        <div className="absolute top-2/3 left-12 w-24 h-24 border-2 border-white/12 rotate-12 rounded-lg" />
-        
-        {/* Triangular shapes */}
-        <svg className="absolute top-1/3 right-20 w-40 h-40 opacity-10" viewBox="0 0 100 100">
-          <polygon points="50,10 90,90 10,90" fill="none" stroke="white" strokeWidth="2"/>
-        </svg>
-        <svg className="absolute bottom-1/4 left-1/3 w-32 h-32 opacity-8" viewBox="0 0 100 100">
-          <polygon points="50,10 90,90 10,90" fill="none" stroke="white" strokeWidth="2"/>
-        </svg>
-        
-        {/* Compass/drafting tool inspired shapes */}
-        <svg className="absolute top-40 right-1/3 w-24 h-24 opacity-10" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="30" fill="none" stroke="white" strokeWidth="2"/>
-          <line x1="50" y1="20" x2="50" y2="80" stroke="white" strokeWidth="2"/>
-          <line x1="20" y1="50" x2="80" y2="50" stroke="white" strokeWidth="2"/>
-        </svg>
-        
-        {/* Ruler marks */}
-        <div className="absolute top-0 left-1/2 h-full flex flex-col justify-around opacity-5">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="w-8 h-px bg-white" />
-          ))}
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Abstract background image */}
+      <div className="absolute inset-0">
+        <img 
+          src={abstractBg} 
+          alt="" 
+          className="w-full h-full object-cover"
+        />
       </div>
       {/* Animated flowing wave backgrounds */}
       <div className="absolute inset-0 overflow-hidden opacity-20">
@@ -137,13 +111,13 @@ export const Hero = () => {
 
       {/* Main content with entrance animations */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        {/* Logo with glow animation and light blue background */}
+        {/* Logo fills the entire circle */}
         <div className="mb-16 flex justify-center animate-logo-glow">
-          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full flex items-center justify-center shadow-2xl" style={{ background: 'hsl(210, 75%, 58%)' }}>
+          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden shadow-2xl">
             <img 
               src={blueprintsIcon} 
               alt="Blueprints Icon" 
-              className="w-48 h-48 md:w-60 md:h-60 object-contain"
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
