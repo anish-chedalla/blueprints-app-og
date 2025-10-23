@@ -1,20 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, DollarSign, CheckCircle2, TrendingUp, Lightbulb, ArrowRight, Layers, Settings, User } from "lucide-react";
+import { Award, DollarSign, CheckCircle2, TrendingUp, Lightbulb, ArrowRight, Layers } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { ProfileSettingsDialog } from "@/components/ProfileSettingsDialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import blueprintBg from "@/assets/blueprint-bg.jpg";
 
 export default function Dashboard() {
   const [recentGrants, setRecentGrants] = useState<any[]>([]);
   const [recentLoans, setRecentLoans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const stats = [
@@ -101,9 +98,7 @@ export default function Dashboard() {
   }
 
   return (
-    <>
-      <ProfileSettingsDialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen} />
-      <DashboardLayout>
+    <DashboardLayout>
       <div className="relative min-h-full">
         {/* Blueprint Background */}
         <div 
@@ -257,24 +252,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Settings Menu */}
-      <div className="fixed bottom-6 left-6 z-50">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" className="h-12 w-12 rounded-full shadow-lg">
-              <Settings className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuItem onClick={() => setProfileDialogOpen(true)}>
-              <User className="mr-2 h-4 w-4" />
-              Edit Profile
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
     </DashboardLayout>
-    </>
   );
 }

@@ -74,20 +74,28 @@ export function ProfileSettingsDialog({ open, onOpenChange }: ProfileSettingsDia
     if (!session) return;
 
     try {
-      const { error } = await supabase.from("profiles").upsert({
-        user_id: session.user.id,
-        business_name: formData.businessName,
-        city: formData.city || null,
-        county: formData.county || null,
-        employees: parseInt(formData.employees) || null,
-        industry_tags: formData.industryTags,
-        demographics: formData.demographics,
-      });
+      const { error } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            user_id: session.user.id,
+            business_name: formData.businessName,
+            city: formData.city || null,
+            county: formData.county || null,
+            employees: parseInt(formData.employees) || null,
+            industry_tags: formData.industryTags,
+            demographics: formData.demographics,
+          },
+          {
+            onConflict: 'user_id'
+          }
+        );
 
       if (error) throw error;
       toast.success("Profile updated successfully!");
       onOpenChange(false);
     } catch (error) {
+      console.error("Profile update error:", error);
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
