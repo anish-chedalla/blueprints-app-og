@@ -1,4 +1,4 @@
-import { Home, Award, DollarSign, Lightbulb, FileText, Bookmark } from "lucide-react";
+import { Home, Award, DollarSign, Lightbulb, FileText, Bookmark, MessageCircle } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Layers } from "lucide-react";
 import {
@@ -18,6 +18,7 @@ const items = [
   { title: "Grants", url: "/grants", icon: Award },
   { title: "Loans", url: "/loans", icon: DollarSign },
   { title: "Idea Lab", url: "/idea-lab", icon: Lightbulb },
+  { title: "Assistant", url: "/assistant", icon: MessageCircle },
   { title: "Licensing", url: "/licensing", icon: FileText },
   { title: "Saved", url: "/saved", icon: Bookmark },
 ];

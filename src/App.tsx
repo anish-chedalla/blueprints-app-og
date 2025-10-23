@@ -12,6 +12,7 @@ import ProgramDetail from "./pages/ProgramDetail";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import IdeaLab from "./pages/IdeaLab";
+import Assistant from "./pages/Assistant";
 import Saved from "./pages/Saved";
 import Licensing from "./pages/Licensing";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,11 @@ const App = () => (
             <Route path="/grants" element={<Grants />} />
             <Route path="/loans" element={<Loans />} />
             <Route path="/idea-lab" element={<IdeaLab />} />
+            <Route path="/assistant" element={
+              <ProtectedRoute>
+                <Assistant />
+              </ProtectedRoute>
+            } />
             <Route path="/saved" element={<Saved />} />
             <Route path="/licensing" element={
               <ProtectedRoute>
