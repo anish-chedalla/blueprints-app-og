@@ -5,7 +5,7 @@ import blueprintsLogo from "@/assets/blueprints-logo.png";
 
 export const Hero = () => {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary via-primary/95 to-primary/90">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(210, 75%, 50%) 0%, hsl(210, 70%, 55%) 100%)' }}>
       {/* Animated flowing wave backgrounds */}
       <div className="absolute inset-0 overflow-hidden opacity-20">
         {/* Horizontal flowing waves */}
@@ -102,13 +102,18 @@ export const Hero = () => {
 
       {/* Main content with entrance animations */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        {/* Logo with glow animation */}
-        <div className="mb-12 flex justify-center animate-logo-glow">
-          <img 
-            src={blueprintsLogo} 
-            alt="Blueprints Logo" 
-            className="w-32 h-32 md:w-40 md:h-40 object-contain"
-          />
+        {/* Logo with glow animation - cropped to show only icon */}
+        <div className="mb-16 flex justify-center animate-logo-glow">
+          <div className="relative w-56 h-56 md:w-72 md:h-72 overflow-hidden">
+            <img 
+              src={blueprintsLogo} 
+              alt="Blueprints Logo" 
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-full object-contain"
+              style={{
+                clipPath: 'inset(0 0 35% 0)'
+              }}
+            />
+          </div>
         </div>
         
         {/* Tagline with staggered slide-up */}
@@ -150,18 +155,6 @@ export const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-slide-up-fade"
-        style={{ animationDelay: '1.4s', opacity: 0 }}
-      >
-        <div className="flex flex-col items-center gap-2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full p-1">
-            <div className="w-1.5 h-3 bg-white/50 rounded-full mx-auto animate-pulse" />
-          </div>
-          <span className="text-white/40 text-xs font-light tracking-wider">SCROLL</span>
-        </div>
-      </div>
     </div>
   );
 };
