@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Building2, MapPin, Users, Briefcase, Award } from "lucide-react";
 
 const INDUSTRIES = ["technology", "retail", "services", "food service", "sustainability", "biotech", "manufacturing", "healthcare"];
@@ -92,7 +91,7 @@ export default function Onboarding() {
     switch (step) {
       case 1:
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
               <Building2 className="h-8 w-8 text-primary" />
               <div>
@@ -121,11 +120,11 @@ export default function Onboarding() {
               <Label htmlFor="employees">Number of Employees</Label>
               <Input id="employees" type="number" value={formData.employees} onChange={(e) => setFormData({...formData, employees: e.target.value})} placeholder="e.g., 5" />
             </div>
-          </motion.div>
+          </div>
         );
       case 2:
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
               <MapPin className="h-8 w-8 text-primary" />
               <div>
@@ -143,11 +142,11 @@ export default function Onboarding() {
                 <Input id="county" value={formData.county} onChange={(e) => setFormData({...formData, county: e.target.value})} placeholder="e.g., Maricopa" />
               </div>
             </div>
-          </motion.div>
+          </div>
         );
       case 3:
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
               <Briefcase className="h-8 w-8 text-primary" />
               <div>
@@ -177,7 +176,7 @@ export default function Onboarding() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         );
       default:
         return null;
@@ -186,7 +185,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-hero)" }}>
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl animate-scale-in">
         <Card className="border-2">
           <CardHeader>
             <div className="flex items-center justify-between mb-2">
@@ -194,7 +193,7 @@ export default function Onboarding() {
               <span className="text-sm text-muted-foreground">Step {step} of {totalSteps}</span>
             </div>
             <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
-              <motion.div className="h-full bg-primary" initial={{ width: 0 }} animate={{ width: `${(step / totalSteps) * 100}%` }} transition={{ duration: 0.3 }} />
+              <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(step / totalSteps) * 100}%` }} />
             </div>
           </CardHeader>
           <CardContent>
@@ -219,7 +218,7 @@ export default function Onboarding() {
             </form>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

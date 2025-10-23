@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
 import { FileText, ExternalLink, RotateCcw, CheckCircle2 } from "lucide-react";
 
 const BUSINESS_TYPES = ["LLC", "Sole Proprietor", "Corporation", "Partnership", "Nonprofit"];
@@ -168,7 +167,7 @@ export default function Licensing() {
     <DashboardLayout>
       <div className="min-h-screen" style={{ background: "var(--gradient-hero)" }}>
         <div className="container mx-auto px-4 py-12">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto animate-fade-in">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-3">Arizona Business Licensing</h1>
               <p className="text-muted-foreground text-lg">Find the licenses and permits you need to operate legally</p>
@@ -235,10 +234,9 @@ export default function Licensing() {
               </CardContent>
             </Card>
 
-            <AnimatePresence mode="wait">
-              {steps.length > 0 ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <Card>
+            {steps.length > 0 ? (
+              <div className="animate-fade-in">
+                <Card>
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
@@ -250,22 +248,19 @@ export default function Licensing() {
                         </span>
                       </div>
                       <div className="w-full bg-secondary h-2 rounded-full overflow-hidden mt-3">
-                        <motion.div 
-                          className="h-full bg-primary" 
-                          initial={{ width: 0 }} 
-                          animate={{ width: `${(completedCount / steps.length) * 100}%` }} 
-                          transition={{ duration: 0.3 }} 
+                        <div 
+                          className="h-full bg-primary transition-all duration-300" 
+                          style={{ width: `${(completedCount / steps.length) * 100}%` }}
                         />
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         {steps.map((step, index) => (
-                          <motion.div
+                          <div
                             key={step.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${index * 50}ms` }}
                           >
                             <Card className={step.completed ? "bg-muted/50" : ""}>
                               <CardContent className="p-4">
@@ -292,27 +287,22 @@ export default function Licensing() {
                                 </div>
                               </CardContent>
                             </Card>
-                          </motion.div>
+                          </div>
                         ))}
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ) : (
                 !loading && (
-                  <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }}
-                    className="text-center py-12"
-                  >
+                  <div className="text-center py-12 animate-fade-in">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
                     <h3 className="text-xl font-semibold mb-2">No checklist generated yet</h3>
                     <p className="text-muted-foreground">Fill out the form above and click "Generate Checklist" to get started</p>
-                  </motion.div>
+                  </div>
                 )
               )}
-            </AnimatePresence>
-          </motion.div>
+          </div>
         </div>
       </div>
     </DashboardLayout>
