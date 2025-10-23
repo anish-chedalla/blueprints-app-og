@@ -128,11 +128,11 @@ export const Hero = () => {
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         {/* Logo with proper padding inside circle */}
         <div className="mb-16 flex justify-center animate-logo-glow">
-          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden shadow-2xl flex items-center justify-center p-8 bg-[#5BA3E8]">
+          <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full shadow-2xl flex items-center justify-center bg-[#5BA3E8]">
             <img 
               src={blueprintsIcon} 
               alt="Blueprints Icon" 
-              className="w-full h-full object-contain"
+              className="w-40 h-40 md:w-52 md:h-52 object-contain"
             />
           </div>
         </div>
