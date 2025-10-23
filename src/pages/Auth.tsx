@@ -15,6 +15,16 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const checkProfileComplete = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("business_name")
+      .eq("user_id", userId)
+      .single();
+    
+    return !!data?.business_name;
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -25,17 +35,19 @@ export default function Auth() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/onboarding`,
           },
         });
         if (error) throw error;
         toast.success("Account created! You can now sign in.");
         setIsSignUp(false);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        
+        const isProfileComplete = await checkProfileComplete(data.user.id);
         toast.success("Signed in successfully");
-        navigate("/dashboard");
+        navigate(isProfileComplete ? "/dashboard" : "/onboarding");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -49,7 +61,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/onboarding`,
         },
       });
       if (error) throw error;

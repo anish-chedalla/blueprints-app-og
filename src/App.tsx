@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import IdeaLab from "./pages/IdeaLab";
 import Saved from "./pages/Saved";
+import Licensing from "./pages/Licensing";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -29,6 +30,11 @@ const App = () => (
           <Route path="/loans" element={<Loans />} />
           <Route path="/idea-lab" element={<IdeaLab />} />
           <Route path="/saved" element={<Saved />} />
+          <Route path="/licensing" element={
+            <ProtectedRoute>
+              <Licensing />
+            </ProtectedRoute>
+          } />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
