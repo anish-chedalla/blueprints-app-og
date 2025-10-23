@@ -8,43 +8,46 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 50% 9%;
+    --background: 0 0% 98%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 50% 9%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 50% 9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 202 75% 22%;
+    --primary: 215 50% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 32 30% 92%;
-    --secondary-foreground: 210 50% 9%;
+    --secondary: 35 25% 90%;
+    --secondary-foreground: 215 25% 15%;
 
-    --muted: 210 20% 95%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 210 15% 92%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 190 75% 59%;
-    --accent-foreground: 210 50% 9%;
+    --accent: 205 65% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 190 75% 59%;
+    --border: 215 15% 88%;
+    --input: 215 15% 88%;
+    --ring: 205 65% 55%;
 
     --radius: 0.75rem;
     
-    --gradient-hero: linear-gradient(135deg, hsl(190, 75%, 90%), hsl(0, 0%, 100%));
-    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%), hsl(210, 20%, 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(215, 50%, 25%), hsl(215, 45%, 35%));
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%), hsl(210, 15%, 97%));
+    --gradient-subtle: linear-gradient(180deg, hsl(215, 50%, 25%) 0%, hsl(215, 45%, 30%) 100%);
     
-    --shadow-soft: 0 4px 20px -2px hsl(202 75% 22% / 0.08);
-    --shadow-card: 0 2px 12px -2px hsl(202 75% 22% / 0.06);
+    --shadow-soft: 0 4px 24px -4px hsl(215 50% 25% / 0.12);
+    --shadow-card: 0 2px 16px -4px hsl(215 50% 25% / 0.08);
+    --shadow-glow: 0 0 40px hsl(205 65% 55% / 0.15);
     
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -64,39 +67,41 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 210 50% 9%;
-    --foreground: 0 0% 100%;
+    --background: 215 50% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 202 50% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 215 45% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 202 50% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 215 45% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 190 75% 59%;
-    --primary-foreground: 210 50% 9%;
+    --primary: 205 65% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 202 40% 18%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 215 40% 16%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 202 40% 18%;
-    --muted-foreground: 210 20% 70%;
+    --muted: 215 40% 16%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 190 75% 59%;
-    --accent-foreground: 210 50% 9%;
+    --accent: 205 65% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 50%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 202 40% 20%;
-    --input: 202 40% 20%;
-    --ring: 190 75% 59%;
+    --border: 215 40% 18%;
+    --input: 215 40% 18%;
+    --ring: 205 65% 55%;
     
-    --gradient-hero: linear-gradient(135deg, hsl(202, 75%, 12%), hsl(210, 50%, 9%));
-    --gradient-card: linear-gradient(180deg, hsl(202, 50%, 12%), hsl(202, 50%, 10%));
+    --gradient-hero: linear-gradient(135deg, hsl(215, 50%, 8%), hsl(215, 45%, 12%));
+    --gradient-card: linear-gradient(180deg, hsl(215, 45%, 12%), hsl(215, 45%, 10%));
+    --gradient-subtle: linear-gradient(180deg, hsl(215, 50%, 8%) 0%, hsl(215, 45%, 10%) 100%);
     
-    --shadow-soft: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
-    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.2);
+    --shadow-soft: 0 4px 24px -4px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 2px 16px -4px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 40px hsl(205 65% 55% / 0.2);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -120,42 +125,68 @@ All colors MUST be HSL.
 
 @layer utilities {
   .hover-lift {
-    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 30px hsl(215 50% 25% / 0.15);
   }
   
   .hover-scale {
-    @apply transition-transform duration-200 ease-out hover:scale-[1.02];
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
   }
   
   .hover-glow {
-    @apply transition-all duration-300 ease-out hover:shadow-[0_0_20px_rgba(var(--primary),0.3)];
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 30px hsl(205 65% 55% / 0.25);
   }
 
   .stagger-1 {
-    animation: fadeInUp 0.5s ease-out 0.1s both;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
   }
   
   .stagger-2 {
-    animation: fadeInUp 0.5s ease-out 0.2s both;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
   }
   
   .stagger-3 {
-    animation: fadeInUp 0.5s ease-out 0.3s both;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
   }
   
   .stagger-4 {
-    animation: fadeInUp 0.5s ease-out 0.4s both;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
   }
 
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 }
 
