@@ -26,8 +26,8 @@ export default function IdeaLab() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+          <div className="mb-8 text-center animate-fade-in">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4 animate-scale-in">
               <Lightbulb className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-4xl font-bold mb-4">Idea Lab</h1>
@@ -37,7 +37,7 @@ export default function IdeaLab() {
           </div>
 
           {/* Main Form */}
-          <Card className="mb-8">
+          <Card className="mb-8 stagger-1 hover-lift">
             <CardHeader>
               <CardTitle>Tell us about your business idea</CardTitle>
               <CardDescription>
@@ -53,7 +53,7 @@ export default function IdeaLab() {
                   value={businessIdea}
                   onChange={(e) => setBusinessIdea(e.target.value)}
                   rows={6}
-                  className="resize-none"
+                  className="resize-none transition-all duration-200 focus:ring-2 focus:ring-primary"
                 />
               </div>
 
@@ -65,6 +65,7 @@ export default function IdeaLab() {
                     placeholder="e.g., Food Service, Technology"
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
+                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
@@ -76,11 +77,12 @@ export default function IdeaLab() {
                     placeholder="e.g., 50000"
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
+                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
               </div>
 
-              <Button onClick={handleAnalyze} className="w-full" size="lg">
+              <Button onClick={handleAnalyze} className="w-full transition-all duration-300 hover:scale-[1.02] hover:shadow-lg" size="lg">
                 <Sparkles className="mr-2 h-5 w-5" />
                 Analyze Idea & Find Funding
               </Button>
@@ -89,7 +91,7 @@ export default function IdeaLab() {
 
           {/* Features Grid */}
           <div className="grid md:grid-cols-3 gap-6">
-            <Card>
+            <Card className="stagger-2 hover-lift transition-all duration-300">
               <CardHeader>
                 <TrendingUp className="h-8 w-8 text-primary mb-2" />
                 <CardTitle className="text-lg">Market Analysis</CardTitle>
@@ -101,7 +103,7 @@ export default function IdeaLab() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="stagger-3 hover-lift transition-all duration-300">
               <CardHeader>
                 <Sparkles className="h-8 w-8 text-primary mb-2" />
                 <CardTitle className="text-lg">Funding Matches</CardTitle>
@@ -113,7 +115,7 @@ export default function IdeaLab() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="stagger-4 hover-lift transition-all duration-300">
               <CardHeader>
                 <Users className="h-8 w-8 text-primary mb-2" />
                 <CardTitle className="text-lg">Expert Guidance</CardTitle>

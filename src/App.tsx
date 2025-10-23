@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PageTransition } from "@/components/PageTransition";
 import Home from "./pages/Home";
 import Grants from "./pages/Grants";
 import Loans from "./pages/Loans";
@@ -24,27 +25,29 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/grants" element={<Grants />} />
-          <Route path="/loans" element={<Loans />} />
-          <Route path="/idea-lab" element={<IdeaLab />} />
-          <Route path="/saved" element={<Saved />} />
-          <Route path="/licensing" element={
-            <ProtectedRoute>
-              <Licensing />
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/program/:id" element={<ProgramDetail />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/grants" element={<Grants />} />
+            <Route path="/loans" element={<Loans />} />
+            <Route path="/idea-lab" element={<IdeaLab />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/licensing" element={
+              <ProtectedRoute>
+                <Licensing />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/program/:id" element={<ProgramDetail />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </PageTransition>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

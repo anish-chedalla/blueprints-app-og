@@ -135,16 +135,16 @@ export default function Dashboard() {
                   Discover grants, secure loans, and navigate Arizona's business landscape with precision.
                 </p>
                 
-                <div className="flex flex-wrap gap-4">
-                  <Button size="lg" asChild>
+                <div className="flex items-center gap-3">
+                  <Button size="lg" asChild className="group">
                     <Link to="/grants">
                       Explore Grants
-                      <ArrowRight className="ml-2 w-4 h-4" />
+                      <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
+                  <Button size="lg" variant="outline" asChild className="group">
                     <Link to="/idea-lab">
-                      <Lightbulb className="mr-2 w-4 h-4" />
+                      <Lightbulb className="mr-2 w-4 h-4 transition-all duration-200 group-hover:text-primary" />
                       Generate Ideas
                     </Link>
                   </Button>
@@ -153,17 +153,20 @@ export default function Dashboard() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => (
-                  <Card key={stat.title} className="bg-card/60 backdrop-blur-sm border-border/50">
+                {stats.map((stat, index) => (
+                  <Card 
+                    key={stat.title} 
+                    className={`bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-${Math.min(index + 1, 4)}`}
+                  >
                     <CardHeader className="space-y-4">
-                      <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center">
-                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                      <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
+                        <stat.icon className={`w-6 h-6 ${stat.color} transition-transform duration-300`} />
                       </div>
                       <div className="space-y-2">
                         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                           {stat.title}
                         </p>
-                        <p className="text-4xl font-bold">{stat.value}</p>
+                        <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{stat.value}</p>
                         <p className="text-sm text-muted-foreground">{stat.subtitle}</p>
                       </div>
                     </CardHeader>
@@ -195,14 +198,15 @@ export default function Dashboard() {
                         </CardHeader>
                       </Card>
                     ) : (
-                      recentGrants.map((grant) => (
+                      recentGrants.map((grant, index) => (
                         <Card 
                           key={grant.id} 
-                          className="bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cursor-pointer"
+                          className={`bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover-lift animate-fade-in-up`}
+                          style={{ animationDelay: `${index * 100}ms` }}
                           onClick={() => navigate(`/program/${grant.id}`)}
                         >
                           <CardHeader>
-                            <CardTitle className="text-lg">{grant.name}</CardTitle>
+                            <CardTitle className="text-lg group-hover:text-primary transition-colors duration-200">{grant.name}</CardTitle>
                             <p className="text-sm text-muted-foreground">{grant.sponsor}</p>
                           </CardHeader>
                         </Card>
@@ -233,14 +237,15 @@ export default function Dashboard() {
                         </CardHeader>
                       </Card>
                     ) : (
-                      recentLoans.map((loan) => (
+                      recentLoans.map((loan, index) => (
                         <Card 
                           key={loan.id}
-                          className="bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cursor-pointer"
+                          className={`bg-card/60 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover-lift animate-fade-in-up`}
+                          style={{ animationDelay: `${index * 100}ms` }}
                           onClick={() => navigate(`/program/${loan.id}`)}
                         >
                           <CardHeader>
-                            <CardTitle className="text-lg">{loan.name}</CardTitle>
+                            <CardTitle className="text-lg group-hover:text-primary transition-colors duration-200">{loan.name}</CardTitle>
                             <p className="text-sm text-muted-foreground">{loan.sponsor}</p>
                           </CardHeader>
                         </Card>

@@ -87,22 +87,21 @@ export const ProgramCard = ({ program, isFavorite = false, onFavoriteToggle }: P
 
   return (
     <Card 
-      className="hover:shadow-lg transition-all cursor-pointer group"
+      className="hover-lift transition-all duration-300 cursor-pointer group border-border/50 hover:border-primary/30"
       onClick={() => navigate(`/program/${program.id}`)}
-      style={{ boxShadow: "var(--shadow-card)" }}
     >
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-2 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge className={getLevelColor(program.level)}>
+              <Badge className={`${getLevelColor(program.level)} transition-all duration-200`}>
                 {program.level}
               </Badge>
-              <Badge variant="outline">
+              <Badge variant="outline" className="transition-all duration-200">
                 {program.type}
               </Badge>
             </div>
-            <CardTitle className="text-xl group-hover:text-primary transition-colors">
+            <CardTitle className="text-xl group-hover:text-primary transition-colors duration-200">
               {program.name}
             </CardTitle>
             <CardDescription className="text-sm">
@@ -114,11 +113,11 @@ export const ProgramCard = ({ program, isFavorite = false, onFavoriteToggle }: P
             variant="ghost"
             onClick={handleFavorite}
             disabled={loading}
-            className="shrink-0"
+            className="shrink-0 hover:scale-110 transition-transform duration-200"
           >
             <Heart
-              className={`h-5 w-5 transition-all ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              className={`h-5 w-5 transition-all duration-200 ${
+                isFavorite ? "fill-red-500 text-red-500 scale-110" : "text-muted-foreground hover:text-red-500"
               }`}
             />
           </Button>
@@ -131,7 +130,7 @@ export const ProgramCard = ({ program, isFavorite = false, onFavoriteToggle }: P
 
         <div className="space-y-2 text-sm">
           {(program.city || program.county) && (
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="flex items-center gap-2 text-muted-foreground transition-colors duration-200 group-hover:text-foreground">
               <MapPin className="h-4 w-4" />
               <span>{[program.city, program.county].filter(Boolean).join(", ")}</span>
             </div>
@@ -139,7 +138,7 @@ export const ProgramCard = ({ program, isFavorite = false, onFavoriteToggle }: P
           
           {formatAmount(program.min_amount, program.max_amount) && (
             <div className="flex items-center gap-2 text-foreground font-medium">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-primary" />
               <span>{formatAmount(program.min_amount, program.max_amount)}</span>
             </div>
           )}
@@ -157,9 +156,9 @@ export const ProgramCard = ({ program, isFavorite = false, onFavoriteToggle }: P
           ) : null}
         </div>
 
-        <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+        <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
           <span>View Details</span>
-          <ExternalLink className="h-4 w-4 ml-2" />
+          <ExternalLink className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
         </Button>
       </CardContent>
     </Card>

@@ -118,6 +118,47 @@ All colors MUST be HSL.
   }
 }
 
+@layer utilities {
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 ease-out hover:scale-[1.02];
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 ease-out hover:shadow-[0_0_20px_rgba(var(--primary),0.3)];
+  }
+
+  .stagger-1 {
+    animation: fadeInUp 0.5s ease-out 0.1s both;
+  }
+  
+  .stagger-2 {
+    animation: fadeInUp 0.5s ease-out 0.2s both;
+  }
+  
+  .stagger-3 {
+    animation: fadeInUp 0.5s ease-out 0.3s both;
+  }
+  
+  .stagger-4 {
+    animation: fadeInUp 0.5s ease-out 0.4s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

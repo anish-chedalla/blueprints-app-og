@@ -44,8 +44,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
-            <Building2 className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-            <span className="text-xl font-bold tracking-tight">Blueprints</span>
+            <Building2 className="h-6 w-6 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+            <span className="text-xl font-bold tracking-tight transition-colors duration-200 group-hover:text-primary">Blueprints</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -54,8 +54,8 @@ export const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(link.path) ? "text-primary" : "text-muted-foreground"
+                className={`text-sm font-medium transition-all duration-200 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-200 hover:after:w-full ${
+                  isActive(link.path) ? "text-primary after:w-full" : "text-muted-foreground"
                 }`}
               >
                 {link.label}
@@ -63,11 +63,11 @@ export const Navbar = () => {
             ))}
             
             {user ? (
-              <Button onClick={handleSignOut} variant="outline" size="sm">
+              <Button onClick={handleSignOut} variant="outline" size="sm" className="transition-all duration-200">
                 Sign Out
               </Button>
             ) : (
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="transition-all duration-200">
                 <Link to="/auth">Sign In</Link>
               </Button>
             )}
@@ -84,16 +84,16 @@ export const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t space-y-2">
+          <div className="md:hidden py-4 border-t space-y-2 animate-fade-in">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive(link.path)
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted"
+                    : "text-muted-foreground hover:bg-muted hover:translate-x-1"
                 }`}
               >
                 {link.label}
@@ -101,11 +101,11 @@ export const Navbar = () => {
             ))}
             
             {user ? (
-              <Button onClick={handleSignOut} variant="outline" size="sm" className="w-full">
+              <Button onClick={handleSignOut} variant="outline" size="sm" className="w-full transition-all duration-200">
                 Sign Out
               </Button>
             ) : (
-              <Button asChild size="sm" className="w-full">
+              <Button asChild size="sm" className="w-full transition-all duration-200">
                 <Link to="/auth">Sign In</Link>
               </Button>
             )}
