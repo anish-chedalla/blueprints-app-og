@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import blueprintsLogo from "@/assets/blueprints-logo.png";
+import blueprintsIcon from "@/assets/blueprints-icon.png";
 
 export const Hero = () => {
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(210, 75%, 50%) 0%, hsl(210, 70%, 55%) 100%)' }}>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 48%) 0%, hsl(210, 75%, 52%) 50%, hsl(210, 68%, 50%) 100%)' }}>
       {/* Animated flowing wave backgrounds */}
       <div className="absolute inset-0 overflow-hidden opacity-20">
         {/* Horizontal flowing waves */}
@@ -102,18 +102,13 @@ export const Hero = () => {
 
       {/* Main content with entrance animations */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        {/* Logo with glow animation - cropped to show only icon */}
+        {/* Logo with glow animation */}
         <div className="mb-16 flex justify-center animate-logo-glow">
-          <div className="relative w-56 h-56 md:w-72 md:h-72 overflow-hidden">
-            <img 
-              src={blueprintsLogo} 
-              alt="Blueprints Logo" 
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-full object-contain"
-              style={{
-                clipPath: 'inset(0 0 35% 0)'
-              }}
-            />
-          </div>
+          <img 
+            src={blueprintsIcon} 
+            alt="Blueprints Icon" 
+            className="w-56 h-56 md:w-72 md:h-72 object-contain drop-shadow-2xl"
+          />
         </div>
         
         {/* Tagline with staggered slide-up */}
