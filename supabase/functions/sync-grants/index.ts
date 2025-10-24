@@ -123,9 +123,7 @@ serve(async (req) => {
       const azRequestBody: GrantAPIRequest = {
         rows: 500,
         keyword: 'Arizona',
-        oppStatuses: 'posted',
-        fundingCategories: '',
-        agencies: ''
+        oppStatuses: 'posted|forecasted',
       };
 
       const azData = await fetchGrantsFromAPI(azRequestBody);
@@ -143,10 +141,8 @@ serve(async (req) => {
       console.log('Fetching nationally available grants...');
       const nationalRequestBody: GrantAPIRequest = {
         rows: 500,
-        oppStatuses: 'posted',
-        fundingCategories: '',
-        agencies: '',
-        eligibilities: 'State governments|County governments|City or township governments|Public and State Controlled Institutions of Higher Education|Native American tribal governments (Federally recognized)|Nonprofits having a 501(c)(3) status with the IRS, other than institutions of higher education|Private institutions of higher education|Small businesses'
+        oppStatuses: 'posted|forecasted',
+        eligibilities: '25',
       };
 
       const nationalData = await fetchGrantsFromAPI(nationalRequestBody);
@@ -167,7 +163,7 @@ serve(async (req) => {
 
     // Process each grant opportunity
     for (const grant of grants) {
-      const oppStatus = grant.oppStatus === 'posted' ? 'OPEN' : 'CLOSED';
+      const oppStatus = (grant.oppStatus === 'posted' || grant.oppStatus === 'forecasted') ? 'OPEN' : 'CLOSED';
       const { min_amount, max_amount } = parseGrantAmount(grant);
       const industry_tags = parseIndustryTags(grant);
       const demographics = parseDemographics(grant);
