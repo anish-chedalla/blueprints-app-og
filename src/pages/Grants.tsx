@@ -7,6 +7,12 @@ import { Search, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Grants() {
   const [programs, setPrograms] = useState<any[]>([]);
@@ -46,17 +52,25 @@ export default function Grants() {
     }
   };
 
-  const handleSyncGrants = async () => {
+  const handleSyncGrants = async (scope: 'arizona' | 'national' | 'both' = 'both') => {
     setSyncing(true);
+    const scopeLabels = {
+      arizona: 'Arizona grants',
+      national: 'national grants',
+      both: 'Arizona and national grants'
+    };
+    
     try {
+      toast.info(`Syncing ${scopeLabels[scope]}...`, { duration: 3000 });
+      
       const { data, error } = await supabase.functions.invoke('sync-grants', {
-        method: 'POST',
+        body: { scope },
       });
 
       if (error) throw error;
 
       if (data.success) {
-        toast.success('Federal grant data updated successfully');
+        toast.success(`Successfully synced ${data.recordsSynced} grants`);
         setLastSynced(data.lastSynced);
         await fetchPrograms();
       } else {
@@ -163,14 +177,28 @@ export default function Grants() {
                 </p>
               )}
             </div>
-            <Button 
-              onClick={handleSyncGrants} 
-              disabled={syncing}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-              {syncing ? 'Syncing...' : 'Sync Grants'}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  disabled={syncing}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                  {syncing ? 'Syncing...' : 'Sync Grants'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleSyncGrants('arizona')}>
+                  Sync Arizona Only
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSyncGrants('national')}>
+                  Sync National Only
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSyncGrants('both')}>
+                  Sync Both (AZ + National)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
           <div className="relative max-w-xl">
