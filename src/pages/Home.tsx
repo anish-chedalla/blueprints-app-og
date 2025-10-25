@@ -7,7 +7,7 @@ import { ProblemOutcome } from "@/components/home/ProblemOutcome";
 import { Steps } from "@/components/home/Steps";
 import { LocalCoverage } from "@/components/home/LocalCoverage";
 import { FilterGrid } from "@/components/home/FilterGrid";
-import { SuccessSnapshots } from "@/components/home/SuccessSnapshots";
+
 import { EmailCapture } from "@/components/home/EmailCapture";
 import { AssuranceRow } from "@/components/home/AssuranceRow";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -49,7 +49,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-        <p>We do not award funds. © 2025 Lilypad Launch. All rights reserved.</p>
+        <p>Blueprints helps you find public opportunities. © 2025 Blueprints. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -82,7 +82,6 @@ export default function Home() {
       <Steps />
       <LocalCoverage />
       <FilterGrid />
-      <SuccessSnapshots />
       <EmailCapture />
       <AssuranceRow />
       <FinalCTA />
