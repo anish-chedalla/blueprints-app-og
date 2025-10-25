@@ -167,61 +167,56 @@ export default function Assistant() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)]" style={{ background: "var(--gradient-hero)" }}>
+      <div className="flex flex-col h-[calc(100vh-4rem)] bg-[#1a1a1a]">
         {/* Chat Container */}
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto px-4 py-6 space-y-4"
+          className="flex-1 overflow-y-auto px-4 py-6 space-y-6 max-w-4xl mx-auto w-full"
         >
           {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex gap-3 animate-fade-in-up ${
-                message.role === "assistant" ? "justify-start" : "justify-end"
-              }`}
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {message.role === "assistant" && (
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 border-primary bg-background ${isLoading && index === messages.length - 1 ? 'animate-pulse' : ''}`}>
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">
-                    B
+            <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 50}ms` }}>
+              {message.role === "assistant" ? (
+                <div className="flex gap-3 items-start">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0 shadow-lg">
+                    <span className="text-lg font-bold text-white">B</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-sm font-semibold text-white">Blueprints</span>
+                    </div>
+                    <div className="bg-[#2a2a2a] rounded-2xl px-4 py-3 text-white/90 text-sm leading-relaxed shadow-md">
+                      {message.content}
+                    </div>
                   </div>
                 </div>
-              )}
-              
-              <Card
-                className={`max-w-[70%] px-4 py-3 ${
-                  message.role === "assistant"
-                    ? "bg-[#0a3d62] text-white border-[#0a3d62]"
-                    : "bg-[#f3efe7] text-foreground border-[#f3efe7]"
-                }`}
-              >
-                <p className="text-sm whitespace-pre-wrap break-words">
-                  {message.content}
-                </p>
-              </Card>
-
-              {message.role === "user" && (
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 text-sm font-semibold text-white">
-                  You
+              ) : (
+                <div className="flex gap-3 items-start justify-end">
+                  <div className="flex-1 flex justify-end">
+                    <div className="bg-[#3a3a3a] rounded-2xl px-4 py-3 text-white/90 text-sm leading-relaxed max-w-[75%] shadow-md">
+                      {message.content}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           ))}
 
           {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <div className="flex gap-3 justify-start animate-fade-in">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 border-primary bg-background animate-pulse">
-                <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">
-                  B
+            <div className="flex gap-3 items-start animate-fade-in">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0 shadow-lg animate-pulse">
+                <span className="text-lg font-bold text-white">B</span>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-sm font-semibold text-white">Blueprints</span>
+                </div>
+                <div className="bg-[#2a2a2a] rounded-2xl px-4 py-3 text-white/90 text-sm shadow-md">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Thinking...</span>
+                  </div>
                 </div>
               </div>
-              <Card className="px-4 py-3 bg-[#0a3d62] text-white border-[#0a3d62]">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">Typing...</span>
-                </div>
-              </Card>
             </div>
           )}
           
@@ -229,7 +224,7 @@ export default function Assistant() {
         </div>
 
         {/* Input Bar */}
-        <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="border-t border-[#2a2a2a] bg-[#1a1a1a]">
           <div className="container mx-auto px-4 py-4">
             <div className="flex gap-2 max-w-4xl mx-auto">
               <Input
@@ -238,13 +233,13 @@ export default function Assistant() {
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about grants, loans, or licensing..."
                 disabled={isLoading}
-                className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-primary"
+                className="flex-1 bg-[#2a2a2a] border-[#3a3a3a] text-white placeholder:text-white/40 focus:ring-2 focus:ring-blue-500"
               />
               <Button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
                 size="icon"
-                className="transition-all duration-200 hover:scale-105"
+                className="bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

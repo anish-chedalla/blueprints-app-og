@@ -21,7 +21,7 @@ const Footer = () => (
         <div>
           <h3 className="font-semibold mb-4">About</h3>
           <p className="text-sm text-muted-foreground">
-            Lilypad Launch helps you find public opportunities.
+            Blueprints helps small businesses find funding opportunities.
           </p>
         </div>
         <div>
@@ -49,7 +49,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-        <p>Blueprints helps you find public opportunities. © 2025 Blueprints. All rights reserved.</p>
+        <p>© 2025 Blueprints. All rights reserved.</p>
       </div>
     </div>
   </footer>
