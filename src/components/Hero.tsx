@@ -69,7 +69,7 @@ export const Hero = () => {
           className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
         >
           <span className="text-primary-foreground drop-shadow-lg animate-[glow_3s_ease-in-out_infinite] [text-shadow:_0_0_20px_rgba(255,255,255,0.3),_0_0_40px_rgba(255,255,255,0.2)] [-webkit-text-stroke:_0.5px_rgba(255,255,255,0.3)]">
-            Your Idea. Our Blueprint
+            Your Ideas. Our Blueprints
           </span>
         </motion.h1>
         
