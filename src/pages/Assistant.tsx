@@ -2,12 +2,23 @@ import { useState, useRef, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, CheckCircle2, Circle, Rocket, Building2, FileText, DollarSign, TrendingUp, Lightbulb } from "lucide-react";
+import { Send, Loader2, CheckCircle2, Circle, Rocket, Building2, FileText, DollarSign, TrendingUp, Lightbulb, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Message {
   role: "user" | "assistant";
@@ -255,6 +266,45 @@ export default function Assistant() {
     return (completed / phases.length) * 100;
   };
 
+  const handleClearMemory = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Delete all chats for this session
+      const { error: chatError } = await supabase
+        .from('launch_companion_chats')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('session_id', sessionId);
+
+      if (chatError) throw chatError;
+
+      // Delete progress for this session
+      const { error: progressError } = await supabase
+        .from('launch_companion_progress')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('session_id', sessionId);
+
+      if (progressError) throw progressError;
+
+      // Reset local state
+      setMessages([{
+        role: "assistant",
+        content: "Hey there! 🚀 I'm your Launch Companion. Ready to launch your Arizona business? Tell me what you're planning — for example, 'a food truck in Tucson' or 'a tech startup in Phoenix'.",
+      }]);
+      setCurrentPhase("plan");
+      setPhases(PHASES);
+      setSessionId(crypto.randomUUID());
+
+      toast.success("Memory cleared! Starting fresh.");
+    } catch (error) {
+      console.error('Error clearing memory:', error);
+      toast.error("Failed to clear memory. Please try again.");
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="flex h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 to-blue-50">
@@ -263,14 +313,38 @@ export default function Assistant() {
           {/* Header */}
           <div className="border-b border-border bg-white/80 backdrop-blur-sm">
             <div className="px-6 py-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <Rocket className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <Rocket className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900">Launch Companion</h1>
+                    <p className="text-sm text-gray-600">Your Arizona business startup guide</p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Launch Companion</h1>
-                  <p className="text-sm text-gray-600">Your Arizona business startup guide</p>
-                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Trash2 className="w-4 h-4" />
+                      Clear Memory
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Clear Launch Companion Memory?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will delete all your chat history and reset your phase progress. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleClearMemory} className="bg-red-600 hover:bg-red-700">
+                        Clear Everything
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
