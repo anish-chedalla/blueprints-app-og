@@ -194,14 +194,16 @@ export default function Assistant() {
             
             // Check for phase update events
             if (parsed.type === 'phase_update') {
-              console.log('Phase update received:', parsed);
+              console.log('✅ Phase update received:', parsed);
               setCurrentPhase(parsed.phase);
-              setPhases(prevPhases => 
-                prevPhases.map(p => ({
+              setPhases(prevPhases => {
+                const updated = prevPhases.map(p => ({
                   ...p,
                   completed: p.id === parsed.completed || p.completed
-                }))
-              );
+                }));
+                console.log('Updated phases:', updated);
+                return updated;
+              });
               toast.success(`Moving to ${parsed.phase.charAt(0).toUpperCase() + parsed.phase.slice(1)} phase! 🎉`);
               continue;
             }

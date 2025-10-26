@@ -163,12 +163,15 @@ serve(async (req) => {
                     fullResponse += delta.content;
                   }
 
-                  // Handle tool calls
-                  if (delta?.tool_calls) {
-                    for (const toolCall of delta.tool_calls) {
+                  // Handle tool calls - Gemini format
+                  if (parsed.choices?.[0]?.message?.tool_calls) {
+                    const toolCalls = parsed.choices[0].message.tool_calls;
+                    for (const toolCall of toolCalls) {
                       if (toolCall.function?.name === 'update_phase') {
                         try {
-                          const args = JSON.parse(toolCall.function.arguments || '{}');
+                          const args = typeof toolCall.function.arguments === 'string' 
+                            ? JSON.parse(toolCall.function.arguments) 
+                            : toolCall.function.arguments;
                           console.log('Tool call to update phase:', args);
                           
                           // Get current progress to append to completed_items
@@ -198,7 +201,7 @@ serve(async (req) => {
                             console.error('Error updating progress:', progressError);
                           } else {
                             console.log('Phase updated successfully to:', args.phase);
-                            // Send phase update event to client
+                            // Send phase update event to client immediately
                             const updateEvent = `data: ${JSON.stringify({ 
                               type: 'phase_update', 
                               phase: args.phase,
@@ -209,6 +212,53 @@ serve(async (req) => {
                         } catch (e) {
                           console.error('Error processing tool call:', e);
                         }
+                      }
+                    }
+                  }
+
+                  // Also check delta tool_calls for streaming format
+                  if (delta?.tool_calls) {
+                    for (const toolCall of delta.tool_calls) {
+                      if (!toolCall.function?.arguments) continue;
+                      
+                      try {
+                        const args = JSON.parse(toolCall.function.arguments);
+                        if (toolCall.function.name === 'update_phase') {
+                          console.log('Tool call (delta) to update phase:', args);
+                          
+                          const { data: currentProgress } = await supabase
+                            .from('launch_companion_progress')
+                            .select('completed_items')
+                            .eq('user_id', user.id)
+                            .eq('session_id', sessionId)
+                            .maybeSingle();
+
+                          const existingCompleted = currentProgress?.completed_items || [];
+                          const updatedCompleted = [...new Set([...existingCompleted, args.completed_phase])];
+                          
+                          const { error: progressError } = await supabase
+                            .from('launch_companion_progress')
+                            .upsert({
+                              user_id: user.id,
+                              session_id: sessionId,
+                              current_phase: args.phase,
+                              completed_items: updatedCompleted,
+                            }, {
+                              onConflict: 'user_id,session_id'
+                            });
+
+                          if (!progressError) {
+                            console.log('Phase updated successfully to:', args.phase);
+                            const updateEvent = `data: ${JSON.stringify({ 
+                              type: 'phase_update', 
+                              phase: args.phase,
+                              completed: args.completed_phase 
+                            })}\n\n`;
+                            controller.enqueue(new TextEncoder().encode(updateEvent));
+                          }
+                        }
+                      } catch (e) {
+                        // Arguments might be incomplete, continue
                       }
                     }
                   }
