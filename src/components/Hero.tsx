@@ -11,7 +11,7 @@ export const Hero = () => {
         <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice">
           <defs>
             <radialGradient id="pinGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="hsl(var(--primary-foreground))" stopOpacity="0.08" />
+              <stop offset="0%" stopColor="hsl(var(--primary-foreground))" stopOpacity="0.3" />
               <stop offset="100%" stopColor="hsl(var(--primary-foreground))" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -37,17 +37,15 @@ export const Hero = () => {
             { x: 42, y: 78, delay: 0.85 },
             { x: 62, y: 90, delay: 0.9 },
           ].map((pin, i) => (
-            <motion.circle
+            <motion.g
               key={`dot-${i}`}
-              cx={`${pin.x}%`}
-              cy={`${pin.y}%`}
-              r="2"
-              fill="hsl(var(--primary-foreground))"
-              opacity="0.15"
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 0.15, scale: 1 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: pin.delay + 0.5 }}
-            />
+            >
+              <circle cx={`${pin.x}%`} cy={`${pin.y}%`} r="12" fill="url(#pinGlow)" />
+              <circle cx={`${pin.x}%`} cy={`${pin.y}%`} r="2.5" fill="hsl(var(--primary-foreground))" opacity="0.4" />
+            </motion.g>
           ))}
         </svg>
       </div>
