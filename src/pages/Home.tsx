@@ -56,24 +56,9 @@ const Footer = () => (
 );
 
 export default function Home() {
-  const [showNav, setShowNav] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setShowNav(true);
-      } else {
-        setShowNav(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
-      {showNav && <Navbar />}
+      <Navbar />
       <Hero />
       <TrustRow />
       <SmartSearch />

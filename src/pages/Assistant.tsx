@@ -167,7 +167,7 @@ export default function Assistant() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-4rem)] bg-[#1a1a1a]">
+      <div className="flex flex-col h-[calc(100vh-4rem)] bg-white">
         {/* Chat Container */}
         <div 
           ref={chatContainerRef}
@@ -182,9 +182,9 @@ export default function Assistant() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-sm font-semibold text-white">Blueprints</span>
+                      <span className="text-sm font-semibold text-gray-900">Blueprints</span>
                     </div>
-                    <div className="bg-[#2a2a2a] rounded-2xl px-4 py-3 text-white/90 text-sm leading-relaxed shadow-md">
+                    <div className="bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 text-sm leading-relaxed shadow-md">
                       {message.content}
                     </div>
                   </div>
@@ -192,7 +192,7 @@ export default function Assistant() {
               ) : (
                 <div className="flex gap-3 items-start justify-end">
                   <div className="flex-1 flex justify-end">
-                    <div className="bg-[#3a3a3a] rounded-2xl px-4 py-3 text-white/90 text-sm leading-relaxed max-w-[75%] shadow-md">
+                    <div className="bg-gray-900 rounded-2xl px-4 py-3 text-white text-sm leading-relaxed max-w-[75%] shadow-md">
                       {message.content}
                     </div>
                   </div>
@@ -208,9 +208,9 @@ export default function Assistant() {
               </div>
               <div className="flex-1">
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-sm font-semibold text-white">Blueprints</span>
+                  <span className="text-sm font-semibold text-gray-900">Blueprints</span>
                 </div>
-                <div className="bg-[#2a2a2a] rounded-2xl px-4 py-3 text-white/90 text-sm shadow-md">
+                <div className="bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 text-sm shadow-md">
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span>Thinking...</span>
@@ -224,7 +224,7 @@ export default function Assistant() {
         </div>
 
         {/* Input Bar */}
-        <div className="border-t border-[#2a2a2a] bg-[#1a1a1a]">
+        <div className="border-t border-gray-200 bg-white">
           <div className="container mx-auto px-4 py-4">
             <div className="flex gap-2 max-w-4xl mx-auto">
               <Input
@@ -233,7 +233,7 @@ export default function Assistant() {
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about grants, loans, or licensing..."
                 disabled={isLoading}
-                className="flex-1 bg-[#2a2a2a] border-[#3a3a3a] text-white placeholder:text-white/40 focus:ring-2 focus:ring-blue-500"
+                className="flex-1 bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500"
               />
               <Button
                 onClick={handleSend}
