@@ -76,8 +76,8 @@ export const Hero = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
         >
-          <span className="text-primary-foreground drop-shadow-lg">
-            Find funding for your small business
+          <span className="text-primary-foreground drop-shadow-lg animate-[glow_3s_ease-in-out_infinite] [text-shadow:_0_0_20px_rgba(255,255,255,0.3),_0_0_40px_rgba(255,255,255,0.2)] [-webkit-text-stroke:_0.5px_rgba(255,255,255,0.3)]">
+            Your Idea. Our Blueprint
           </span>
         </motion.h1>
         
