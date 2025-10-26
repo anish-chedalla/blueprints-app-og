@@ -43,17 +43,12 @@ export function AppSidebar() {
   return (
     <>
       <ProfileSettingsDialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen} />
-      <Sidebar>
+      <Sidebar className="ml-2">
         <SidebarHeader>
-          <div className="flex items-center gap-3 px-4 py-3">
-            <img 
-              src={blueprintsLogo} 
-              alt="Arizona Funding Flow" 
-              className="h-8 w-8 object-contain"
-            />
-            <div>
-              <h2 className="font-bold text-lg">AZ Funding Flow</h2>
-            </div>
+          <div className="flex items-center gap-3 px-4 py-4">
+            <h2 className="font-bold text-xl bg-gradient-to-r from-white via-blue-100 to-blue-400 bg-clip-text text-transparent">
+              Blueprints
+            </h2>
           </div>
         </SidebarHeader>
         
@@ -66,11 +61,11 @@ export function AppSidebar() {
                     to={item.url}
                     className={({ isActive }) => 
                       isActive 
-                        ? "text-foreground bg-transparent hover:bg-muted/50" 
-                        : "text-foreground bg-transparent hover:bg-muted/50"
+                        ? "text-foreground bg-transparent hover:bg-muted/50 text-base" 
+                        : "text-foreground bg-transparent hover:bg-muted/50 text-base"
                     }
                   >
-                    <item.icon />
+                    <item.icon className="w-5 h-5" />
                     <span>{item.title}</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -83,18 +78,18 @@ export function AppSidebar() {
           <div className="p-2 space-y-2">
             <Button 
               variant="ghost" 
-              className="w-full justify-start"
+              className="w-full justify-start text-base"
               onClick={() => setProfileDialogOpen(true)}
             >
-              <Settings className="mr-2 h-4 w-4" />
+              <Settings className="mr-2 h-5 w-5" />
               Settings
             </Button>
             <Button 
               variant="ghost" 
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="w-full justify-start text-base text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={handleSignOut}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-5 w-5" />
               Sign Out
             </Button>
           </div>

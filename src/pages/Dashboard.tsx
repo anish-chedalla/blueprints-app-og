@@ -12,38 +12,11 @@ export default function Dashboard() {
   const [recentGrants, setRecentGrants] = useState<any[]>([]);
   const [recentLoans, setRecentLoans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [grantsCount, setGrantsCount] = useState(0);
+  const [loansCount, setLoansCount] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
+  const [newThisWeekCount, setNewThisWeekCount] = useState(0);
   const navigate = useNavigate();
-
-  const stats = [
-    { 
-      title: "ACTIVE GRANTS", 
-      value: "6", 
-      subtitle: "Available now",
-      icon: Award,
-      color: "text-primary"
-    },
-    { 
-      title: "LOAN PROGRAMS", 
-      value: "6", 
-      subtitle: "Ready to apply",
-      icon: DollarSign,
-      color: "text-primary"
-    },
-    { 
-      title: "SAVED ITEMS", 
-      value: "0", 
-      subtitle: "Tracking",
-      icon: CheckCircle2,
-      color: "text-primary"
-    },
-    { 
-      title: "NEW THIS WEEK", 
-      value: "0", 
-      subtitle: "Fresh opportunities",
-      icon: TrendingUp,
-      color: "text-primary"
-    },
-  ];
 
   useEffect(() => {
     checkAuth();
@@ -78,8 +51,38 @@ export default function Dashboard() {
         .order("created_at", { ascending: false })
         .limit(2);
 
+      // Count all grants
+      const { count: grantsTotal } = await supabase
+        .from("programs")
+        .select("*", { count: "exact", head: true })
+        .eq("type", "GRANT");
+
+      // Count all loans
+      const { count: loansTotal } = await supabase
+        .from("programs")
+        .select("*", { count: "exact", head: true })
+        .eq("type", "LOAN");
+
+      // Count saved items
+      const { count: savedTotal } = await supabase
+        .from("favorites")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
+
+      // Count new items this week
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const { count: newThisWeek } = await supabase
+        .from("programs")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", oneWeekAgo.toISOString());
+
       setRecentGrants(grantsData || []);
       setRecentLoans(loansData || []);
+      setGrantsCount(grantsTotal || 0);
+      setLoansCount(loansTotal || 0);
+      setSavedCount(savedTotal || 0);
+      setNewThisWeekCount(newThisWeek || 0);
     } catch (error) {
       toast.error("Failed to load dashboard data");
     } finally {
@@ -148,25 +151,62 @@ export default function Dashboard() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <Card 
-                    key={stat.title} 
-                    className={`bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-${Math.min(index + 1, 4)}`}
-                  >
-                    <CardHeader className="space-y-4">
-                      <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
-                        <stat.icon className={`w-6 h-6 ${stat.color} transition-transform duration-300`} />
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                          {stat.title}
-                        </p>
-                        <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{stat.value}</p>
-                        <p className="text-sm text-muted-foreground">{stat.subtitle}</p>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))}
+                <Card className="bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-1">
+                  <CardHeader className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
+                      <Award className="w-6 h-6 text-primary transition-transform duration-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        ACTIVE GRANTS
+                      </p>
+                      <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{grantsCount}</p>
+                      <p className="text-sm text-muted-foreground">Available now</p>
+                    </div>
+                  </CardHeader>
+                </Card>
+                <Card className="bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-2">
+                  <CardHeader className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
+                      <DollarSign className="w-6 h-6 text-primary transition-transform duration-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        LOAN PROGRAMS
+                      </p>
+                      <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{loansCount}</p>
+                      <p className="text-sm text-muted-foreground">Ready to apply</p>
+                    </div>
+                  </CardHeader>
+                </Card>
+                <Card className="bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-3">
+                  <CardHeader className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
+                      <CheckCircle2 className="w-6 h-6 text-primary transition-transform duration-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        SAVED ITEMS
+                      </p>
+                      <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{savedCount}</p>
+                      <p className="text-sm text-muted-foreground">Tracking</p>
+                    </div>
+                  </CardHeader>
+                </Card>
+                <Card className="bg-card/60 backdrop-blur-sm border-border/50 hover-lift stagger-4">
+                  <CardHeader className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg border border-border/50 bg-background/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-primary/50">
+                      <TrendingUp className="w-6 h-6 text-primary transition-transform duration-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        NEW THIS WEEK
+                      </p>
+                      <p className="text-4xl font-bold transition-colors duration-200 group-hover:text-primary">{newThisWeekCount}</p>
+                      <p className="text-sm text-muted-foreground">Fresh opportunities</p>
+                    </div>
+                  </CardHeader>
+                </Card>
               </div>
 
               {/* Recent Sections */}
