@@ -16,6 +16,18 @@ Your role:
 - Be encouraging, professional, and conversational
 - Focus on actionable steps
 
+IMPORTANT - PHASE PROGRESSION:
+When the user has completed key tasks in their current phase and is ready to move forward, call the update_phase function to:
+1. Mark the current phase as completed
+2. Move them to the next phase
+
+Phase progression guide:
+- PLAN → REGISTER: When they've decided on business type/name and have a basic plan
+- REGISTER → LICENSE: When they've filed their LLC/corporation and gotten EIN
+- LICENSE → FINANCE: When they understand their permit requirements
+- FINANCE → OPERATE: When they've explored funding options
+- OPERATE: Final phase for ongoing operations
+
 IMPORTANT RESOURCES:
 - Arizona Corporation Commission (eCorp): azcc.gov/ecorp
 - EIN Application: irs.gov/ein
@@ -77,6 +89,32 @@ serve(async (req) => {
           ...messages
         ],
         stream: true,
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'update_phase',
+              description: 'Update the user\'s current phase in their startup journey. Call this when the user has completed tasks for their current phase and is ready to move to the next one.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  phase: {
+                    type: 'string',
+                    enum: ['plan', 'register', 'license', 'finance', 'operate'],
+                    description: 'The new phase to move to'
+                  },
+                  completed_phase: {
+                    type: 'string',
+                    enum: ['plan', 'register', 'license', 'finance', 'operate'],
+                    description: 'The phase that was just completed'
+                  }
+                },
+                required: ['phase', 'completed_phase']
+              }
+            }
+          }
+        ],
+        tool_choice: 'auto'
       }),
     });
 
@@ -101,6 +139,7 @@ serve(async (req) => {
         const reader = response.body!.getReader();
         const decoder = new TextDecoder();
         let fullResponse = '';
+        let toolCalls: any[] = [];
 
         try {
           while (true) {
@@ -117,9 +156,61 @@ serve(async (req) => {
 
                 try {
                   const parsed = JSON.parse(data);
-                  const content = parsed.choices?.[0]?.delta?.content;
-                  if (content) {
-                    fullResponse += content;
+                  const delta = parsed.choices?.[0]?.delta;
+                  
+                  // Handle text content
+                  if (delta?.content) {
+                    fullResponse += delta.content;
+                  }
+
+                  // Handle tool calls
+                  if (delta?.tool_calls) {
+                    for (const toolCall of delta.tool_calls) {
+                      if (toolCall.function?.name === 'update_phase') {
+                        try {
+                          const args = JSON.parse(toolCall.function.arguments || '{}');
+                          console.log('Tool call to update phase:', args);
+                          
+                          // Get current progress to append to completed_items
+                          const { data: currentProgress } = await supabase
+                            .from('launch_companion_progress')
+                            .select('completed_items')
+                            .eq('user_id', user.id)
+                            .eq('session_id', sessionId)
+                            .maybeSingle();
+
+                          const existingCompleted = currentProgress?.completed_items || [];
+                          const updatedCompleted = [...new Set([...existingCompleted, args.completed_phase])];
+                          
+                          // Update progress in database
+                          const { error: progressError } = await supabase
+                            .from('launch_companion_progress')
+                            .upsert({
+                              user_id: user.id,
+                              session_id: sessionId,
+                              current_phase: args.phase,
+                              completed_items: updatedCompleted,
+                            }, {
+                              onConflict: 'user_id,session_id'
+                            });
+
+                          if (progressError) {
+                            console.error('Error updating progress:', progressError);
+                          } else {
+                            console.log('Phase updated successfully to:', args.phase);
+                            // Send phase update event to client
+                            const updateEvent = `data: ${JSON.stringify({ 
+                              type: 'phase_update', 
+                              phase: args.phase,
+                              completed: args.completed_phase 
+                            })}\n\n`;
+                            controller.enqueue(new TextEncoder().encode(updateEvent));
+                          }
+                        } catch (e) {
+                          console.error('Error processing tool call:', e);
+                        }
+                      }
+                    }
                   }
                 } catch (e) {
                   // Skip parsing errors

@@ -39,9 +39,10 @@ export default function Assistant() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState<string>("");
   const [currentPhase, setCurrentPhase] = useState<string>("plan");
   const [phases, setPhases] = useState(PHASES);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -58,14 +59,52 @@ export default function Assistant() {
 
   const loadChatHistory = async () => {
     try {
+      setIsLoadingHistory(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setIsLoadingHistory(false);
+        return;
+      }
 
+      // Find the most recent session or create new one
+      const { data: recentProgress } = await supabase
+        .from('launch_companion_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let currentSessionId: string;
+      if (recentProgress) {
+        currentSessionId = recentProgress.session_id;
+        setCurrentPhase(recentProgress.current_phase);
+        
+        // Update phase completion
+        const updatedPhases = PHASES.map(phase => ({
+          ...phase,
+          completed: recentProgress.completed_items?.includes(phase.id) || false
+        }));
+        setPhases(updatedPhases);
+      } else {
+        currentSessionId = crypto.randomUUID();
+        // Create initial progress record
+        await supabase.from('launch_companion_progress').insert({
+          user_id: user.id,
+          session_id: currentSessionId,
+          current_phase: 'plan',
+          completed_items: []
+        });
+      }
+
+      setSessionId(currentSessionId);
+
+      // Load chat history for this session
       const { data: chats } = await supabase
         .from('launch_companion_chats')
         .select('*')
         .eq('user_id', user.id)
-        .eq('session_id', sessionId)
+        .eq('session_id', currentSessionId)
         .order('created_at', { ascending: true });
 
       if (chats && chats.length > 0) {
@@ -76,25 +115,12 @@ export default function Assistant() {
         setMessages([messages[0], ...chatMessages]);
       }
 
-      // Load progress
-      const { data: progress } = await supabase
-        .from('launch_companion_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('session_id', sessionId)
-        .single();
-
-      if (progress) {
-        setCurrentPhase(progress.current_phase);
-        // Update phase completion based on progress
-        const updatedPhases = PHASES.map(phase => ({
-          ...phase,
-          completed: progress.completed_items?.includes(phase.id) || false
-        }));
-        setPhases(updatedPhases);
-      }
+      setIsLoadingHistory(false);
     } catch (error) {
       console.error('Error loading chat history:', error);
+      setIsLoadingHistory(false);
+      // Fallback to new session
+      setSessionId(crypto.randomUUID());
     }
   };
 
@@ -165,6 +191,21 @@ export default function Assistant() {
 
           try {
             const parsed = JSON.parse(jsonStr);
+            
+            // Check for phase update events
+            if (parsed.type === 'phase_update') {
+              console.log('Phase update received:', parsed);
+              setCurrentPhase(parsed.phase);
+              setPhases(prevPhases => 
+                prevPhases.map(p => ({
+                  ...p,
+                  completed: p.id === parsed.completed || p.completed
+                }))
+              );
+              toast.success(`Moving to ${parsed.phase.charAt(0).toUpperCase() + parsed.phase.slice(1)} phase! 🎉`);
+              continue;
+            }
+
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantMessage += content;
@@ -234,6 +275,12 @@ export default function Assistant() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            {isLoadingHistory && (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Loading your conversation...</span>
+              </div>
+            )}
             <AnimatePresence>
               {messages.map((message, index) => (
                 <motion.div
