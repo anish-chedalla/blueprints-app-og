@@ -81,6 +81,75 @@ export type Database = {
           },
         ]
       }
+      launch_companion_chats: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          session_id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      launch_companion_progress: {
+        Row: {
+          business_location: string | null
+          business_type: string | null
+          checklist_items: Json | null
+          completed_items: string[] | null
+          created_at: string
+          current_phase: string
+          id: string
+          phase_data: Json | null
+          session_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_location?: string | null
+          business_type?: string | null
+          checklist_items?: Json | null
+          completed_items?: string[] | null
+          created_at?: string
+          current_phase?: string
+          id?: string
+          phase_data?: Json | null
+          session_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_location?: string | null
+          business_type?: string | null
+          checklist_items?: Json | null
+          completed_items?: string[] | null
+          created_at?: string
+          current_phase?: string
+          id?: string
+          phase_data?: Json | null
+          session_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           business_name: string | null
