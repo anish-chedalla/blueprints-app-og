@@ -7,18 +7,24 @@ import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check auth state for navbar display
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    // Check auth status for navbar display
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session?.user);
+      setLoading(false);
+    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session?.user);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -28,7 +34,7 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate("/");
   };
 
   const navLinks = [
@@ -43,7 +49,7 @@ export const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2 group">
             <Building2 className="h-6 w-6 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
             <span className="text-xl font-bold tracking-tight transition-colors duration-200 group-hover:text-primary">Blueprints</span>
           </Link>
@@ -53,7 +59,7 @@ export const Navbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={user ? link.path : "/auth"}
+                to={link.path}
                 className={`text-sm font-medium transition-all duration-200 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-200 hover:after:w-full ${
                   isActive(link.path) ? "text-primary after:w-full" : "text-muted-foreground"
                 }`}
@@ -62,14 +68,16 @@ export const Navbar = () => {
               </Link>
             ))}
             
-            {user ? (
-              <Button onClick={handleSignOut} variant="outline" size="sm" className="transition-all duration-200">
-                Sign Out
-              </Button>
-            ) : (
-              <Button asChild size="sm" className="transition-all duration-200">
-                <Link to="/auth">Sign In</Link>
-              </Button>
+            {!loading && (
+              isAuthenticated ? (
+                <Button onClick={handleSignOut} variant="outline" size="sm" className="transition-all duration-200">
+                  Sign Out
+                </Button>
+              ) : (
+                <Button asChild size="sm" className="transition-all duration-200">
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+              )
             )}
           </div>
 
@@ -88,7 +96,7 @@ export const Navbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={user ? link.path : "/auth"}
+                to={link.path}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive(link.path)
@@ -100,14 +108,16 @@ export const Navbar = () => {
               </Link>
             ))}
             
-            {user ? (
-              <Button onClick={handleSignOut} variant="outline" size="sm" className="w-full transition-all duration-200">
-                Sign Out
-              </Button>
-            ) : (
-              <Button asChild size="sm" className="w-full transition-all duration-200">
-                <Link to="/auth">Sign In</Link>
-              </Button>
+            {!loading && (
+              isAuthenticated ? (
+                <Button onClick={handleSignOut} variant="outline" size="sm" className="w-full transition-all duration-200">
+                  Sign Out
+                </Button>
+              ) : (
+                <Button asChild size="sm" className="w-full transition-all duration-200">
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+              )
             )}
           </div>
         )}

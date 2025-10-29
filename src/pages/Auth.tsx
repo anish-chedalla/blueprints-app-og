@@ -8,28 +8,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Building2 } from "lucide-react";
 
-
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check auth state independently
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    // Check if user is already authenticated and redirect immediately
+    const checkCurrentAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
-    });
+    };
+    
+    checkCurrentAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        navigate("/dashboard");
+    // Listen for auth changes to redirect after sign in
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        navigate("/dashboard", { replace: true });
       }
     });
 
@@ -57,13 +57,16 @@ export default function Auth() {
           },
         });
         if (error) throw error;
-        toast.success("Account created! You can now sign in.");
+        toast.success("Account created! Please check your email and then sign in.");
         setIsSignUp(false);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ 
+          email, 
+          password 
+        });
         if (error) throw error;
         toast.success("Signed in successfully");
-        navigate("/dashboard");
+        // Navigation will happen via onAuthStateChange
       }
     } catch (error: any) {
       toast.error(error.message);

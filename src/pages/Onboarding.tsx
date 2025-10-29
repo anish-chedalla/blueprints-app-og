@@ -17,8 +17,9 @@ const BUSINESS_TYPES = ["LLC", "Sole Proprietor", "Corporation", "Partnership", 
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     businessName: "",
     businessType: "",
@@ -30,26 +31,31 @@ export default function Onboarding() {
   });
 
   useEffect(() => {
-    const checkExistingProfile = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session?.user) {
         navigate("/auth");
         return;
       }
-      
-      setUser(session.user);
 
+      setCurrentUser(session.user);
+
+      // Check if user already has a complete profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (profile?.business_name) {
         navigate("/dashboard");
+        return;
       }
+
+      setLoading(false);
     };
-    checkExistingProfile();
+
+    checkAuth();
   }, [navigate]);
 
   const toggleTag = (tag: string, field: "industryTags" | "demographics") => {
@@ -61,7 +67,7 @@ export default function Onboarding() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
+    if (!currentUser) {
       toast.error("Please sign in first");
       navigate("/auth");
       return;
@@ -69,7 +75,7 @@ export default function Onboarding() {
 
     try {
       const profileData: any = {
-        user_id: user.id,
+        user_id: currentUser.id,
         business_name: formData.businessName,
         city: formData.city || null,
         county: formData.county || null,
@@ -185,6 +191,17 @@ export default function Onboarding() {
         return null;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-hero)" }}>
