@@ -31,11 +31,7 @@ const App = () => (
           <PageTransition>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              } />
+              <Route path="/" element={<Home />} />
               <Route path="/grants" element={
                 <ProtectedRoute>
                   <Grants />
