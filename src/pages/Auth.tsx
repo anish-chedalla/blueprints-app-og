@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Building2 } from "lucide-react";
+import { Building2, Loader2 } from "lucide-react";
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -14,18 +15,18 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Redirect if already logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const isProfileComplete = await checkProfileComplete(session.user.id);
-        navigate(isProfileComplete ? "/dashboard" : "/onboarding");
-      }
-    };
-    checkUser();
-  }, [navigate]);
+    // Only redirect if we're sure about auth state (not loading) and user exists
+    if (!authLoading && user) {
+      const checkAndRedirect = async () => {
+        const isProfileComplete = await checkProfileComplete(user.id);
+        navigate(isProfileComplete ? "/dashboard" : "/onboarding", { replace: true });
+      };
+      checkAndRedirect();
+    }
+  }, [user, authLoading, navigate]);
 
   const checkProfileComplete = async (userId: string) => {
     const { data } = await supabase
@@ -81,6 +82,15 @@ export default function Auth() {
       toast.error(error.message);
     }
   };
+
+  // Show loading while checking auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
