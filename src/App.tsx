@@ -27,7 +27,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter basename="/blueprints-app-og">
+        <BrowserRouter basename={window.location.hostname.includes('github.io') ? '/blueprints-app-og' : ''}>
           <PageTransition>
             <Routes>
               <Route path="/auth" element={<Auth />} />

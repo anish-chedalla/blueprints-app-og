@@ -23,6 +23,13 @@ export default function Auth() {
     }
   }, [user]);
 
+  const getRedirectUrl = (path: string) => {
+    const base = window.location.hostname.includes('github.io') 
+      ? `${window.location.origin}/blueprints-app-og` 
+      : window.location.origin;
+    return `${base}${path}`;
+  };
+
   const checkProfileAndRedirect = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
@@ -43,7 +50,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/blueprints-app-og/onboarding`,
+            emailRedirectTo: getRedirectUrl('/onboarding'),
           },
         });
         if (error) throw error;
@@ -66,7 +73,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/blueprints-app-og/onboarding`,
+          redirectTo: getRedirectUrl('/onboarding'),
         },
       });
       if (error) throw error;
