@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Building2, MapPin, Users, Briefcase, Award } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const INDUSTRIES = ["technology", "retail", "services", "food service", "sustainability", "biotech", "manufacturing", "healthcare"];
 const DEMOGRAPHICS = ["women_owned", "veteran_owned", "minority_owned"];
@@ -16,6 +17,7 @@ const BUSINESS_TYPES = ["LLC", "Sole Proprietor", "Corporation", "Partnership", 
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     businessName: "",
@@ -29,8 +31,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     const checkExistingProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!user) {
         navigate("/auth");
         return;
       }
@@ -38,7 +39,7 @@ export default function Onboarding() {
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .single();
 
       if (profile?.business_name) {
@@ -46,7 +47,7 @@ export default function Onboarding() {
       }
     };
     checkExistingProfile();
-  }, [navigate]);
+  }, [user, navigate]);
 
   const toggleTag = (tag: string, field: "industryTags" | "demographics") => {
     setFormData(prev => ({
@@ -57,8 +58,7 @@ export default function Onboarding() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    if (!user) {
       toast.error("Please sign in first");
       navigate("/auth");
       return;
@@ -66,7 +66,7 @@ export default function Onboarding() {
 
     try {
       const profileData: any = {
-        user_id: session.user.id,
+        user_id: user.id,
         business_name: formData.businessName,
         city: formData.city || null,
         county: formData.county || null,

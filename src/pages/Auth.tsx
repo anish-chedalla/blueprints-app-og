@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Building2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -14,15 +15,22 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const checkProfileComplete = async (userId: string) => {
+  useEffect(() => {
+    if (user) {
+      checkProfileAndRedirect(user.id);
+    }
+  }, [user]);
+
+  const checkProfileAndRedirect = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
       .select("business_name")
       .eq("user_id", userId)
       .single();
     
-    return !!data?.business_name;
+    navigate(data?.business_name ? "/dashboard" : "/onboarding");
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -44,10 +52,7 @@ export default function Auth() {
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        
-        const isProfileComplete = await checkProfileComplete(data.user.id);
         toast.success("Signed in successfully");
-        navigate(isProfileComplete ? "/dashboard" : "/onboarding");
       }
     } catch (error: any) {
       toast.error(error.message);

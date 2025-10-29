@@ -17,45 +17,76 @@ import Saved from "./pages/Saved";
 import Licensing from "./pages/Licensing";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <PageTransition>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/grants" element={<Grants />} />
-            <Route path="/loans" element={<Loans />} />
-            <Route path="/idea-lab" element={<IdeaLab />} />
-            <Route path="/assistant" element={
-              <ProtectedRoute>
-                <Assistant />
-              </ProtectedRoute>
-            } />
-            <Route path="/saved" element={<Saved />} />
-            <Route path="/licensing" element={
-              <ProtectedRoute>
-                <Licensing />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/program/:id" element={<ProgramDetail />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </PageTransition>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <PageTransition>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              } />
+              <Route path="/grants" element={
+                <ProtectedRoute>
+                  <Grants />
+                </ProtectedRoute>
+              } />
+              <Route path="/loans" element={
+                <ProtectedRoute>
+                  <Loans />
+                </ProtectedRoute>
+              } />
+              <Route path="/idea-lab" element={
+                <ProtectedRoute>
+                  <IdeaLab />
+                </ProtectedRoute>
+              } />
+              <Route path="/assistant" element={
+                <ProtectedRoute>
+                  <Assistant />
+                </ProtectedRoute>
+              } />
+              <Route path="/saved" element={
+                <ProtectedRoute>
+                  <Saved />
+                </ProtectedRoute>
+              } />
+              <Route path="/licensing" element={
+                <ProtectedRoute>
+                  <Licensing />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/program/:id" element={
+                <ProtectedRoute>
+                  <ProgramDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="/onboarding" element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
