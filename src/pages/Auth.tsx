@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,18 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect if already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const isProfileComplete = await checkProfileComplete(session.user.id);
+        navigate(isProfileComplete ? "/dashboard" : "/onboarding");
+      }
+    };
+    checkUser();
+  }, [navigate]);
 
   const checkProfileComplete = async (userId: string) => {
     const { data } = await supabase
