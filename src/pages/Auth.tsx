@@ -34,9 +34,9 @@ export default function Auth() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-          },
+        options: {
+          emailRedirectTo: `${window.location.origin}/blueprints-app-og/onboarding`,
+        },
         });
         if (error) throw error;
         toast.success("Account created! You can now sign in.");
@@ -61,7 +61,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: `${window.location.origin}/blueprints-app-og/onboarding`,
         },
       });
       if (error) throw error;
