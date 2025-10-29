@@ -18,26 +18,17 @@ export default function Auth() {
   const { user } = useAuth();
 
   useEffect(() => {
+    // If user is already signed in, redirect to dashboard immediately
     if (user) {
-      checkProfileAndRedirect(user.id);
+      navigate("/dashboard");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const getRedirectUrl = (path: string) => {
     const base = window.location.hostname.includes('github.io') 
       ? `${window.location.origin}/blueprints-app-og` 
       : window.location.origin;
     return `${base}${path}`;
-  };
-
-  const checkProfileAndRedirect = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("business_name")
-      .eq("user_id", userId)
-      .maybeSingle();
-    
-    navigate(data?.business_name ? "/dashboard" : "/onboarding");
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -50,16 +41,17 @@ export default function Auth() {
           email,
           password,
           options: {
-            emailRedirectTo: getRedirectUrl('/onboarding'),
+            emailRedirectTo: getRedirectUrl('/dashboard'),
           },
         });
         if (error) throw error;
         toast.success("Account created! You can now sign in.");
         setIsSignUp(false);
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Signed in successfully");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -73,7 +65,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: getRedirectUrl('/onboarding'),
+          redirectTo: getRedirectUrl('/dashboard'),
         },
       });
       if (error) throw error;
