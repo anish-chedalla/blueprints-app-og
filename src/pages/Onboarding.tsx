@@ -8,8 +8,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Building2, MapPin, Users, Briefcase, Award, Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Building2, MapPin, Users, Briefcase, Award } from "lucide-react";
 
 const INDUSTRIES = ["technology", "retail", "services", "food service", "sustainability", "biotech", "manufacturing", "healthcare"];
 const DEMOGRAPHICS = ["women_owned", "veteran_owned", "minority_owned"];
@@ -17,7 +16,6 @@ const BUSINESS_TYPES = ["LLC", "Sole Proprietor", "Corporation", "Partnership", 
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     businessName: "",
@@ -30,28 +28,25 @@ export default function Onboarding() {
   });
 
   useEffect(() => {
-    // Only check profile after auth is loaded
-    if (!authLoading) {
-      if (!user) {
-        navigate("/", { replace: true });
+    const checkExistingProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
         return;
       }
 
-      // Check if profile already exists
-      const checkProfile = async () => {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .single();
 
-        if (profile?.business_name) {
-          navigate("/dashboard", { replace: true });
-        }
-      };
-      checkProfile();
-    }
-  }, [user, authLoading, navigate]);
+      if (profile?.business_name) {
+        navigate("/dashboard");
+      }
+    };
+    checkExistingProfile();
+  }, [navigate]);
 
   const toggleTag = (tag: string, field: "industryTags" | "demographics") => {
     setFormData(prev => ({
@@ -62,16 +57,16 @@ export default function Onboarding() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast.error("Not authenticated");
-      navigate("/", { replace: true });
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please sign in first");
+      navigate("/auth");
       return;
     }
 
     try {
       const profileData: any = {
-        user_id: user.id,
+        user_id: session.user.id,
         business_name: formData.businessName,
         city: formData.city || null,
         county: formData.county || null,
@@ -84,7 +79,7 @@ export default function Onboarding() {
 
       if (error) throw error;
       toast.success("Profile saved successfully!");
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to save profile");
     }
@@ -187,15 +182,6 @@ export default function Onboarding() {
         return null;
     }
   };
-
-  // Show loading while auth state is being determined
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-hero)" }}>

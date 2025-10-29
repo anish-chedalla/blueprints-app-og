@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PageTransition } from "@/components/PageTransition";
-import { AuthProvider } from "@/contexts/AuthContext";
 import Home from "./pages/Home";
 import Grants from "./pages/Grants";
 import Loans from "./pages/Loans";
@@ -26,10 +25,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/blueprints-app-og">
-        <AuthProvider>
-          <PageTransition>
-            <Routes>
+      <BrowserRouter>
+        <PageTransition>
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/grants" element={<Grants />} />
             <Route path="/loans" element={<Loans />} />
@@ -54,9 +52,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="*" element={<NotFound />} />
-            </Routes>
-          </PageTransition>
-        </AuthProvider>
+          </Routes>
+        </PageTransition>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
