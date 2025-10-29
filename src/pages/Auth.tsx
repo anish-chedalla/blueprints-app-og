@@ -35,7 +35,7 @@ export default function Auth() {
       .from("profiles")
       .select("business_name")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
     
     navigate(data?.business_name ? "/dashboard" : "/onboarding");
   };

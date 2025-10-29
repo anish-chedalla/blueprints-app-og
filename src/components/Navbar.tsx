@@ -4,31 +4,19 @@ import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-
-  // Check auth state
-  useState(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  });
+  const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/");
+    navigate("/auth");
   };
 
   const navLinks = [
@@ -53,7 +41,7 @@ export const Navbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={link.path}
+                to={user ? link.path : "/auth"}
                 className={`text-sm font-medium transition-all duration-200 hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-200 hover:after:w-full ${
                   isActive(link.path) ? "text-primary after:w-full" : "text-muted-foreground"
                 }`}
@@ -88,7 +76,7 @@ export const Navbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={link.path}
+                to={user ? link.path : "/auth"}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive(link.path)
