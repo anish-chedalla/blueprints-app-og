@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Building2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,14 +15,26 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // If user is already signed in, redirect to dashboard immediately
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
+    // Check auth state independently
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        navigate("/dashboard");
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        navigate("/dashboard");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const getRedirectUrl = (path: string) => {
     const base = window.location.hostname.includes('github.io') 

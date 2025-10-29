@@ -17,14 +17,13 @@ import Saved from "./pages/Saved";
 import Licensing from "./pages/Licensing";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { AuthProvider } from "@/contexts/AuthContext";
+
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
+    <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter basename={window.location.hostname.includes('github.io') ? '/blueprints-app-og' : ''}>
@@ -82,8 +81,7 @@ const App = () => (
           </PageTransition>
         </BrowserRouter>
       </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+    </QueryClientProvider>
 );
 
 export default App;

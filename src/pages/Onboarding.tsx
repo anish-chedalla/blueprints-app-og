@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Building2, MapPin, Users, Briefcase, Award } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
 
 const INDUSTRIES = ["technology", "retail", "services", "food service", "sustainability", "biotech", "manufacturing", "healthcare"];
 const DEMOGRAPHICS = ["women_owned", "veteran_owned", "minority_owned"];
@@ -17,7 +17,7 @@ const BUSINESS_TYPES = ["LLC", "Sole Proprietor", "Corporation", "Partnership", 
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     businessName: "",
@@ -31,15 +31,18 @@ export default function Onboarding() {
 
   useEffect(() => {
     const checkExistingProfile = async () => {
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         navigate("/auth");
         return;
       }
+      
+      setUser(session.user);
 
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", session.user.id)
         .single();
 
       if (profile?.business_name) {
@@ -47,7 +50,7 @@ export default function Onboarding() {
       }
     };
     checkExistingProfile();
-  }, [user, navigate]);
+  }, [navigate]);
 
   const toggleTag = (tag: string, field: "industryTags" | "demographics") => {
     setFormData(prev => ({
