@@ -55,12 +55,10 @@ export default function Auth() {
         toast.success("Account created! You can now sign in.");
         setIsSignUp(false);
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        
-        const isProfileComplete = await checkProfileComplete(data.user.id);
         toast.success("Signed in successfully");
-        navigate(isProfileComplete ? "/dashboard" : "/onboarding");
+        // Navigation will be handled by useEffect when user state updates
       }
     } catch (error: any) {
       toast.error(error.message);
