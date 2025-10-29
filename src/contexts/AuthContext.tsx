@@ -16,35 +16,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Clear session on mount (force re-login every time)
-    const clearAndCheck = async () => {
-      await supabase.auth.signOut({ scope: 'local' });
-      
-      // Check for active session (in case of redirect from OAuth)
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      setLoading(false);
-    };
-
-    clearAndCheck();
-
-    // Listen for auth changes
+    // 1) Listen for auth changes FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    // 2) THEN check for existing session (prevents race conditions on OAuth redirect)
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Clear session when tab/window closes
-    const handleBeforeUnload = () => {
-      supabase.auth.signOut({ scope: 'local' });
-    };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      subscription.unsubscribe();
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
